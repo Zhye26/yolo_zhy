@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}检测结果 - 电动车违规检测系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">首页</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('main.history') }}">历史记录</a></li>
+                <li class="breadcrumb-item active">检测结果</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-image"></i> 检测结果</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if detection.file_type == 'image' %}
+                    <img src="{{ url_for('static', filename='outputs/' + output_filename) }}"
+                         class="img-fluid rounded" alt="检测结果">
+                {% else %}
+                    <video controls class="w-100 rounded">
+                        <source src="{{ url_for('static', filename='outputs/' + output_filename) }}" type="video/mp4">
+                    </video>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5><i class="bi bi-info-circle"></i> 文件信息</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>文件名:</strong> {{ detection.filename }}</p>
+                <p><strong>类型:</strong> {{ detection.file_type }}</p>
+                <p><strong>检测时间:</strong> {{ detection.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-exclamation-triangle"></i> 违规检测 ({{ violations|length }})</h5>
+            </div>
+            <div class="card-body">
+                {% if violations %}
+                    {% for v in violations %}
+                    <div class="alert {% if v.type == 'passenger' %}alert-warning{% else %}alert-danger{% endif %} mb-2">
+                        <strong>
+                            {% if v.type == 'passenger' %}
+                                <i class="bi bi-people"></i> 载人违规
+                            {% else %}
+                                <i class="bi bi-shield-x"></i> 未戴头盔
+                            {% endif %}
+                        </strong>
+                        <br>
+                        <small>置信度: {{ "%.2f"|format(v.confidence) }}</small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-success text-center">
+                        <i class="bi bi-check-circle"></i> 未检测到违规行为
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a href="{{ url_for('detection.upload') }}" class="btn btn-primary w-100">
+                <i class="bi bi-plus"></i> 继续检测
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

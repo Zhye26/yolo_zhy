@@ -1,0 +1,34 @@
+# 训练专用 Docker Compose 配置
+version: '3.8'
+
+services:
+  train:
+    build: .
+    container_name: ebike-train
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./runs:/app/runs
+    working_dir: /app
+    command: >
+      python -c "
+      from ultralytics import YOLO
+      model = YOLO('yolov8n.pt')
+      model.train(
+          data='data/helmet_dataset/data.yaml',
+          epochs=50,
+          imgsz=640,
+          batch=16,
+          project='runs/train',
+          name='helmet_v1',
+          exist_ok=True
+      )
+      "
+    # GPU支持（如果有nvidia-docker）
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

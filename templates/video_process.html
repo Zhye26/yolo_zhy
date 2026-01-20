@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}视频处理 - 电动车违规检测系统{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-camera-video"></i> 视频处理中</h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">处理中...</span>
+                </div>
+                <h5>正在处理视频: {{ detection.filename }}</h5>
+                <div class="progress mt-4" style="height: 25px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated"
+                         id="progressBar" style="width: 0%">0%</div>
+                </div>
+                <p class="text-muted mt-3">视频处理可能需要一些时间，请耐心等待...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 模拟进度更新（实际应用中应使用WebSocket或轮询）
+let progress = 0;
+const progressBar = document.getElementById('progressBar');
+
+const interval = setInterval(() => {
+    progress += Math.random() * 10;
+    if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+        // 处理完成后跳转到结果页面
+        setTimeout(() => {
+            window.location.href = "{{ url_for('detection.result', detection_id=detection.id) }}";
+        }, 1000);
+    }
+    progressBar.style.width = progress + '%';
+    progressBar.textContent = Math.round(progress) + '%';
+}, 500);
+</script>
+{% endblock %}

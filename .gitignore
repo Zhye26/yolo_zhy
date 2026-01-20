@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.venv/
+
+# 环境变量和密钥 (重要!)
+.env
+.env.local
+*.pem
+*.key
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 数据集 (太大，不上传)
+data/helmet_dataset/
+data/ebike_dataset/
+data/merged_dataset/
+data/raw_images/
+data/raw_labels/
+
+# 训练产物 (太大)
+runs/
+*.pt
+!models/.gitkeep
+
+# 上传和输出文件
+static/uploads/*
+static/outputs/*
+!static/uploads/.gitkeep
+!static/outputs/.gitkeep
+
+# 系统文件
+.DS_Store
+Thumbs.db
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# 临时文件
+*.tmp
+*.temp

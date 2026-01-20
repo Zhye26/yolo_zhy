@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+.env
+.venv
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 测试和文档
+tests/
+*.md
+!CLAUDE.md
+
+# 数据和模型（通过volume挂载）
+data/images/*
+data/labels/*
+data/videos/*
+models/*.pt
+static/uploads/*
+static/outputs/*
+
+# 其他
+*.log
+.DS_Store
+Thumbs.db
+runs/

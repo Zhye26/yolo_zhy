@@ -1,0 +1,21 @@
+# Web Framework
+flask>=3.0.0
+flask-sqlalchemy>=3.1.0
+flask-migrate>=4.0.0
+pymysql>=1.1.0
+
+# AI/ML
+ultralytics>=8.1.0
+torch>=2.0.0
+torchvision>=0.15.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Tracking
+lap>=0.4.0
+filterpy>=1.4.5
+
+# Utils
+python-dotenv>=1.0.0
+pillow>=10.0.0
+tqdm>=4.66.0

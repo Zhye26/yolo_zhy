@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}仪表板 - 电动车违规检测系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-speedometer2"></i> 系统仪表板</h2>
+    </div>
+</div>
+
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">总检测次数</h5>
+                <h2 class="display-4">{{ stats.total_detections }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">今日检测</h5>
+                <h2 class="display-4">{{ stats.today_detections }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark">
+            <div class="card-body">
+                <h5 class="card-title">载人违规</h5>
+                <h2 class="display-4">{{ stats.passenger_violations }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <h5 class="card-title">头盔违规</h5>
+                <h2 class="display-4">{{ stats.helmet_violations }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快捷操作 -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightning"></i> 快捷操作
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('detection.upload') }}" class="btn btn-primary btn-lg me-2">
+                    <i class="bi bi-upload"></i> 上传图片/视频
+                </a>
+                <a href="{{ url_for('main.history') }}" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-clock-history"></i> 查看历史
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-bar-chart"></i> 违规趋势
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 最近违规记录 -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle"></i> 最近违规记录
+            </div>
+            <div class="card-body">
+                {% if recent_violations %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>违规类型</th>
+                            <th>置信度</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for v in recent_violations %}
+                        <tr>
+                            <td>{{ v.id }}</td>
+                            <td>
+                                {% if v.violation_type == 'passenger' %}
+                                    <span class="badge bg-warning">载人违规</span>
+                                {% else %}
+                                    <span class="badge bg-danger">未戴头盔</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ "%.2f"|format(v.confidence) }}</td>
+                            <td>{{ v.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('detection.result', detection_id=v.detection_id) }}" class="btn btn-sm btn-outline-primary">
+                                    查看详情
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted text-center">暂无违规记录</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 加载趋势图表
+fetch('/api/chart/daily?days=7')
+    .then(response => response.json())
+    .then(data => {
+        const labels = Object.keys(data).sort();
+        const passengerData = labels.map(d => data[d]?.passenger || 0);
+        const helmetData = labels.map(d => data[d]?.no_helmet || 0);
+
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '载人违规',
+                        data: passengerData,
+                        borderColor: '#ffc107',
+                        tension: 0.1
+                    },
+                    {
+                        label: '头盔违规',
+                        data: helmetData,
+                        borderColor: '#dc3545',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
