@@ -1,0 +1,3843 @@
+{
+  "summary": {
+    "total_images": 3948,
+    "problem_images": 235,
+    "missing_labels": 173,
+    "extra_labels": 207
+  },
+  "problem_images": [
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1535-_jpg.rf.3df8b298c7fac4565cf6dde900a2f3ff.jpg",
+      "gt_count": 4,
+      "pred_count": 5,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              157.88340759277344,
+              1.6020630598068237,
+              348.5908508300781,
+              547.9630126953125
+            ],
+            "class": 1,
+            "conf": 0.9879804253578186,
+            "matched": false
+          },
+          {
+            "box": [
+              391.7271728515625,
+              0.0,
+              602.7836303710938,
+              465.17230224609375
+            ],
+            "class": 1,
+            "conf": 0.966543436050415,
+            "matched": false
+          },
+          {
+            "box": [
+              563.6177368164062,
+              332.8603820800781,
+              704.0,
+              575.2037353515625
+            ],
+            "class": 1,
+            "conf": 0.9143685102462769,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              80.0,
+              62.500000000000014,
+              238.0,
+              271.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              197.99999999999997,
+              166.5,
+              592.0,
+              521.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              152.5,
+              245.00000000000003,
+              455.5,
+              751.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              285.5,
+              217.49999999999997,
+              854.5,
+              672.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1490-_jpg.rf.35ee56dc4163f4f809fdd546ec0aa161.jpg",
+      "gt_count": 4,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              194.18336486816406,
+              35.522335052490234,
+              363.62689208984375,
+              527.193359375
+            ],
+            "class": 1,
+            "conf": 0.9672486186027527,
+            "matched": false
+          },
+          {
+            "box": [
+              406.1064453125,
+              49.026973724365234,
+              564.4738159179688,
+              492.8834228515625
+            ],
+            "class": 1,
+            "conf": 0.948317289352417,
+            "matched": false
+          },
+          {
+            "box": [
+              156.1802978515625,
+              339.778076171875,
+              313.7769775390625,
+              574.2261352539062
+            ],
+            "class": 1,
+            "conf": 0.9145295023918152,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              97.5,
+              57.00000000000001,
+              292.5,
+              297.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              205.49999999999997,
+              129.49999999999997,
+              622.5,
+              480.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              258.0,
+              161.50000000000003,
+              720.0,
+              626.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              81.0,
+              186.99999999999997,
+              239.0,
+              621.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1478-_jpg.rf.e008447ae036aada5351f9dd86c02758.jpg",
+      "gt_count": 3,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              191.8260955810547,
+              0.0,
+              248.1060333251953,
+              137.41900634765625
+            ],
+            "class": 1,
+            "conf": 0.9850163459777832,
+            "matched": false
+          },
+          {
+            "box": [
+              93.34566497802734,
+              0.838226318359375,
+              218.7586212158203,
+              305.0888671875
+            ],
+            "class": 1,
+            "conf": 0.9773141741752625,
+            "matched": false
+          },
+          {
+            "box": [
+              190.53955078125,
+              226.65914916992188,
+              307.9742126464844,
+              403.8385925292969
+            ],
+            "class": 1,
+            "conf": 0.9561301469802856,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              45.49999999999999,
+              -24.5,
+              138.5,
+              44.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              96.0,
+              118.00000000000001,
+              286.0,
+              380.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              97.5,
+              -20.999999999999996,
+              290.5,
+              29.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1388-_jpg.rf.25ff21751a042d90ed567bd1c42429b4.jpg",
+      "gt_count": 2,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              305.3614501953125,
+              0.0,
+              410.2518005371094,
+              400.29815673828125
+            ],
+            "class": 1,
+            "conf": 0.9863941073417664,
+            "matched": false
+          },
+          {
+            "box": [
+              198.2103729248047,
+              319.38134765625,
+              536.5880737304688,
+              574.5730590820312
+            ],
+            "class": 1,
+            "conf": 0.9704127907752991,
+            "matched": false
+          },
+          {
+            "box": [
+              303.52099609375,
+              320.6123962402344,
+              536.7789916992188,
+              574.9505004882812
+            ],
+            "class": 1,
+            "conf": 0.9020082354545593,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              150.5,
+              -34.0,
+              467.5,
+              88.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              91.99999999999997,
+              248.50000000000003,
+              278.0,
+              765.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0063_jpg.rf.6490e4ecf4c9973b4e5df2bdf4ee8848.jpg",
+      "gt_count": 12,
+      "pred_count": 10,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              349.2214050292969,
+              330.82952880859375,
+              361.7098083496094,
+              351.16802978515625
+            ],
+            "class": 3,
+            "conf": 0.527859628200531,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              628.5,
+              369.00000000000006,
+              639.5,
+              400.0
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              331.5,
+              309.0,
+              345.50000000000006,
+              334.0
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              207.0,
+              324.0,
+              222.0,
+              346.99999999999994
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              81.49999999999999,
+              328.00000000000006,
+              92.5,
+              351.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1483-_jpg.rf.6888f362776f24159e6d770e2f84c126.jpg",
+      "gt_count": 3,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              285.56610107421875,
+              231.92147827148438,
+              425.6548156738281,
+              573.2645874023438
+            ],
+            "class": 1,
+            "conf": 0.7590824961662292,
+            "matched": false
+          },
+          {
+            "box": [
+              43.311458587646484,
+              300.9125061035156,
+              235.0505828857422,
+              576.0
+            ],
+            "class": 1,
+            "conf": 0.5822671055793762,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              208.49999999999994,
+              82.49999999999997,
+              619.5,
+              267.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              141.0,
+              127.49999999999997,
+              423.0,
+              438.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              15.000000000000002,
+              162.49999999999997,
+              39.0,
+              501.49999999999994
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1445-_jpg.rf.51c54f75e036bd56e5ae558e332785ca.jpg",
+      "gt_count": 3,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              77.11296081542969,
+              153.9257354736328,
+              173.13917541503906,
+              403.7051086425781
+            ],
+            "class": 0,
+            "conf": 0.7902227640151978,
+            "matched": false
+          },
+          {
+            "box": [
+              131.9210662841797,
+              6.074102878570557,
+              387.00909423828125,
+              534.3198852539062
+            ],
+            "class": 1,
+            "conf": 0.5869987607002258,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              113.5,
+              -11.999999999999996,
+              326.5,
+              98.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              192.00000000000003,
+              115.0,
+              586.0000000000001,
+              389.0
+            ],
+            "class": 0,
+            "matched": false
+          },
+          {
+            "box": [
+              58.0,
+              63.500000000000014,
+              173.99999999999997,
+              254.5
+            ],
+            "class": 0,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1036-_jpg.rf.ff170625e651305989df97cd2672f801.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              493.65838623046875,
+              86.38632202148438,
+              651.7559814453125,
+              530.7264404296875
+            ],
+            "class": 1,
+            "conf": 0.9669983386993408,
+            "matched": false
+          },
+          {
+            "box": [
+              344.305908203125,
+              1.0900970697402954,
+              491.5474853515625,
+              531.9462890625
+            ],
+            "class": 1,
+            "conf": 0.8656860589981079,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              175.5,
+              126.99999999999999,
+              526.5,
+              403.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              247.49999999999997,
+              222.5,
+              740.5,
+              691.5000000000001
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1434-_jpg.rf.8eac2d8f99e19cd599a25ec3d6b146cd.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              486.7900390625,
+              41.67498779296875,
+              620.472900390625,
+              467.54693603515625
+            ],
+            "class": 1,
+            "conf": 0.9985125660896301,
+            "matched": false
+          },
+          {
+            "box": [
+              322.0517883300781,
+              158.0062713623047,
+              502.6466369628906,
+              529.2008666992188
+            ],
+            "class": 1,
+            "conf": 0.8284368515014648,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              160.99999999999997,
+              136.0,
+              479.0,
+              447.99999999999994
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              242.5,
+              123.50000000000001,
+              731.5,
+              410.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1460-_jpg.rf.f104217b6b3f6749b0ea21ff5889d7ab.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              458.0791015625,
+              195.7952880859375,
+              671.7542724609375,
+              558.85400390625
+            ],
+            "class": 1,
+            "conf": 0.7454506158828735,
+            "matched": false
+          },
+          {
+            "box": [
+              519.705322265625,
+              454.4013366699219,
+              691.3751220703125,
+              575.459228515625
+            ],
+            "class": 1,
+            "conf": 0.5189173221588135,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              296.5,
+              126.50000000000001,
+              871.5000000000001,
+              427.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              262.0,
+              246.0,
+              784.0000000000001,
+              766.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1564-_jpg.rf.15d3b41f202338ec586219527e136274.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              344.04791259765625,
+              100.90452575683594,
+              460.279052734375,
+              532.8794555664062
+            ],
+            "class": 1,
+            "conf": 0.8955156207084656,
+            "matched": false
+          },
+          {
+            "box": [
+              530.2147216796875,
+              441.2121276855469,
+              641.3262939453125,
+              576.0
+            ],
+            "class": 1,
+            "conf": 0.8381578922271729,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              172.49999999999997,
+              101.99999999999999,
+              519.5,
+              428.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              268.5,
+              227.0,
+              801.5,
+              759.0000000000001
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1468-_jpg.rf.fa957c6e97eb7b516721b03f76d87b56.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              460.23211669921875,
+              156.779052734375,
+              624.3994140625,
+              505.542724609375
+            ],
+            "class": 1,
+            "conf": 0.974949300289154,
+            "matched": false
+          },
+          {
+            "box": [
+              347.30010986328125,
+              275.72113037109375,
+              549.4535522460938,
+              574.4183349609375
+            ],
+            "class": 1,
+            "conf": 0.9625757336616516,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              283.00000000000006,
+              72.00000000000001,
+              841.0,
+              262.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              170.0,
+              188.50000000000003,
+              512.0,
+              717.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1437-_jpg.rf.0b1f4aca4d3748288da4fb538ee2791a.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              238.90008544921875,
+              25.930734634399414,
+              391.36944580078125,
+              498.8892822265625
+            ],
+            "class": 1,
+            "conf": 0.9200544953346252,
+            "matched": false
+          },
+          {
+            "box": [
+              450.5484313964844,
+              155.49325561523438,
+              622.3839721679688,
+              429.37847900390625
+            ],
+            "class": 1,
+            "conf": 0.8561028838157654,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              119.99999999999999,
+              46.0,
+              364.0,
+              332.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              225.50000000000003,
+              148.5,
+              678.5,
+              477.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1384-_jpg.rf.effadcd0f7859447f81d4dbfdfc3c4a0.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              166.37258911132812,
+              0.0,
+              326.01806640625,
+              312.48358154296875
+            ],
+            "class": 1,
+            "conf": 0.9603899717330933,
+            "matched": false
+          },
+          {
+            "box": [
+              214.8220672607422,
+              118.25861358642578,
+              414.6387023925781,
+              567.7208862304688
+            ],
+            "class": 1,
+            "conf": 0.7464660406112671,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              86.0,
+              46.99999999999999,
+              254.00000000000003,
+              241.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              114.0,
+              126.49999999999999,
+              328.0,
+              583.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1472-_jpg.rf.da35ca164bcef6061545447eb404bb49.jpg",
+      "gt_count": 2,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              283.3958740234375,
+              48.48710632324219,
+              352.0,
+              256.1958312988281
+            ],
+            "class": 1,
+            "conf": 0.920730710029602,
+            "matched": false
+          },
+          {
+            "box": [
+              206.72702026367188,
+              194.8046112060547,
+              271.95849609375,
+              265.8559875488281
+            ],
+            "class": 1,
+            "conf": 0.9040248990058899,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              143.5,
+              72.00000000000001,
+              430.49999999999994,
+              226.00000000000003
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              106.00000000000003,
+              109.50000000000001,
+              316.0,
+              354.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1454-_jpg.rf.2f8f168220377040600e319ff4fa04d5.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              241.70718383789062,
+              189.6147918701172,
+              419.8172302246094,
+              576.0
+            ],
+            "class": 1,
+            "conf": 0.970986545085907,
+            "matched": false
+          },
+          {
+            "box": [
+              422.5369873046875,
+              113.0487060546875,
+              577.1052856445312,
+              566.7159423828125
+            ],
+            "class": 1,
+            "conf": 0.9039003252983093,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              119.0,
+              159.5,
+              358.99999999999994,
+              556.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              210.00000000000003,
+              254.5,
+              628.0,
+              775.4999999999999
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1533-_jpg.rf.4b26e83108506d621e9ecee30bd6fb4b.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              99.80763244628906,
+              0.0,
+              175.17909240722656,
+              197.7721710205078
+            ],
+            "class": 1,
+            "conf": 0.9768320918083191,
+            "matched": false
+          },
+          {
+            "box": [
+              88.99360656738281,
+              252.4575653076172,
+              150.3958282470703,
+              288.0
+            ],
+            "class": 1,
+            "conf": 0.6726041436195374,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              53.0,
+              2.499999999999999,
+              159.0,
+              33.5
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              45.00000000000001,
+              122.5,
+              133.0,
+              397.50000000000006
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1013-_jpg.rf.43248d1d4566c9923ded807002acd6d8.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              226.6547088623047,
+              312.32763671875,
+              350.6305847167969,
+              570.775390625
+            ],
+            "class": 1,
+            "conf": 0.9058973789215088,
+            "matched": false
+          },
+          {
+            "box": [
+              387.39959716796875,
+              67.08354949951172,
+              569.396728515625,
+              531.900634765625
+            ],
+            "class": 1,
+            "conf": 0.8971527814865112,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              196.49999999999994,
+              142.0,
+              587.5,
+              470.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              115.50000000000001,
+              175.0,
+              344.5,
+              603.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1469-_jpg.rf.6f3ac386ba5e474c99bc4f691ffea8f2.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              453.62103271484375,
+              159.72592163085938,
+              630.025146484375,
+              503.93206787109375
+            ],
+            "class": 1,
+            "conf": 0.986339807510376,
+            "matched": false
+          },
+          {
+            "box": [
+              346.3027648925781,
+              298.56414794921875,
+              522.24072265625,
+              574.417236328125
+            ],
+            "class": 1,
+            "conf": 0.9752129316329956,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              224.99999999999994,
+              124.99999999999999,
+              669.0,
+              385.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              173.99999999999997,
+              163.0,
+              518.0,
+              553.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0197_jpg.rf.d9eec45b1b2e47bdb32f8aa16daf6287.jpg",
+      "gt_count": 4,
+      "pred_count": 4,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              240.05462646484375,
+              335.0083312988281,
+              254.01629638671875,
+              359.6324768066406
+            ],
+            "class": 3,
+            "conf": 0.5475843548774719,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              247.5,
+              337.5,
+              264.5,
+              355.5
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              237.5,
+              336.0,
+              249.50000000000003,
+              349.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0255_jpg.rf.91f966adf46f337ea9efe5e9ff1db9cc.jpg",
+      "gt_count": 5,
+      "pred_count": 4,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              122.23818969726562,
+              296.0234375,
+              130.86488342285156,
+              311.5416259765625
+            ],
+            "class": 3,
+            "conf": 0.5036589503288269,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              119.75,
+              295.5,
+              128.25,
+              314.5
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              131.75,
+              294.5,
+              140.25,
+              309.5
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0079_jpg.rf.0035d3c55470e4693907eb1db4da5409.jpg",
+      "gt_count": 7,
+      "pred_count": 5,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              525.5,
+              274.5,
+              535.5,
+              289.5
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              358.5,
+              292.5,
+              368.5,
+              308.5
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              635.0,
+              314.0,
+              640.0,
+              333.00000000000006
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-144-_jpg.rf.3af63ca30576699a9030b37d14e1e621.jpg",
+      "gt_count": 2,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              694.8251342773438,
+              38.885353088378906,
+              1183.960693359375,
+              740.9785766601562
+            ],
+            "class": 1,
+            "conf": 0.7997288703918457,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              476.00000000000006,
+              464.0,
+              1146.0,
+              1077.0
+            ],
+            "class": 0,
+            "matched": false
+          },
+          {
+            "box": [
+              349.5,
+              284.5,
+              1040.5,
+              893.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-153-_jpg.rf.ab71be508384b784c8029fa8524e7ab6.jpg",
+      "gt_count": 2,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              585.6337280273438,
+              4.1045379638671875,
+              1223.6693115234375,
+              699.1676025390625
+            ],
+            "class": 1,
+            "conf": 0.9905140399932861,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              366.0,
+              371.00000000000006,
+              1382.0,
+              1068.0
+            ],
+            "class": 0,
+            "matched": false
+          },
+          {
+            "box": [
+              286.49999999999994,
+              240.0,
+              857.5000000000001,
+              752.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0059_jpg.rf.1bc09a9d3fe8fa4dc7f42495934a98cf.jpg",
+      "gt_count": 11,
+      "pred_count": 13,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              558.5850219726562,
+              329.6177978515625,
+              568.5485229492188,
+              347.646728515625
+            ],
+            "class": 3,
+            "conf": 0.727959394454956,
+            "matched": false
+          },
+          {
+            "box": [
+              602.0018310546875,
+              343.76226806640625,
+              612.17041015625,
+              359.8818359375
+            ],
+            "class": 3,
+            "conf": 0.5424942970275879,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              577.5,
+              331.0,
+              587.5,
+              351.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-102-_jpg.rf.74d7b15d6af619b5dedad6920d8f3055.jpg",
+      "gt_count": 2,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              1108.158935546875,
+              57.9056396484375,
+              1557.3446044921875,
+              829.67529296875
+            ],
+            "class": 1,
+            "conf": 0.9780133366584778,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              850.9999999999999,
+              534.0,
+              1642.0,
+              1046.0
+            ],
+            "class": 0,
+            "matched": false
+          },
+          {
+            "box": [
+              554.4999999999999,
+              230.0,
+              1661.4999999999998,
+              789.9999999999999
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0058_jpg.rf.8cab0c72c6ecbbedc89523c5b8d6e8d2.jpg",
+      "gt_count": 9,
+      "pred_count": 10,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              400.5757141113281,
+              303.16363525390625,
+              412.1396179199219,
+              324.53424072265625
+            ],
+            "class": 3,
+            "conf": 0.7113242149353027,
+            "matched": false
+          },
+          {
+            "box": [
+              448.18359375,
+              325.6719970703125,
+              460.133056640625,
+              346.869384765625
+            ],
+            "class": 3,
+            "conf": 0.5062202215194702,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              385.0,
+              295.75,
+              399.00000000000006,
+              312.25
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0195_jpg.rf.ba8cba316862d7df17ca3302ff910664.jpg",
+      "gt_count": 7,
+      "pred_count": 7,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              199.7674560546875,
+              403.843994140625,
+              221.865966796875,
+              446.703369140625
+            ],
+            "class": 3,
+            "conf": 0.5069456696510315,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              197.75000000000003,
+              307.5,
+              208.25,
+              319.5
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              208.5,
+              301.25,
+              216.5,
+              316.75
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0069_jpg.rf.5d4d188f8be17a546f39947e1024fc09.jpg",
+      "gt_count": 11,
+      "pred_count": 9,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              269.0,
+              257.0,
+              278.0,
+              276.0
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              146.0,
+              296.0,
+              159.0,
+              318.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-143-_jpg.rf.d16ccad9fe6af492cc67214bc44a2482.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              761.4476318359375,
+              305.5082702636719,
+              1395.7823486328125,
+              1080.0
+            ],
+            "class": 1,
+            "conf": 0.9600105881690979,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              382.49999999999994,
+              464.00000000000006,
+              1137.5,
+              1424.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1530-_jpg.rf.abbd70470449fa848f66d3c2db2a4495.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              512.8021240234375,
+              269.5471496582031,
+              634.4585571289062,
+              572.4622192382812
+            ],
+            "class": 1,
+            "conf": 0.9731845855712891,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              255.50000000000003,
+              145.49999999999997,
+              764.5,
+              492.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0063_jpg.rf.4f55d31f027c885663be42d8dc5673d9.jpg",
+      "gt_count": 12,
+      "pred_count": 12,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              345.442138671875,
+              325.9642333984375,
+              357.9041748046875,
+              347.9464111328125
+            ],
+            "class": 3,
+            "conf": 0.6819667220115662,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              80.0,
+              315.00000000000006,
+              92.0,
+              339.00000000000006
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0057_jpg.rf.02f648176295631b9b86321abfa8083e.jpg",
+      "gt_count": 12,
+      "pred_count": 17,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              527.7767333984375,
+              340.4798278808594,
+              537.2723388671875,
+              359.6403503417969
+            ],
+            "class": 3,
+            "conf": 0.6637279391288757,
+            "matched": false
+          },
+          {
+            "box": [
+              540.4342041015625,
+              334.9645690917969,
+              551.7357177734375,
+              358.5543518066406
+            ],
+            "class": 3,
+            "conf": 0.5351107716560364,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0197_jpg.rf.f08366cd08637ad11eb57fae51a8bb73.jpg",
+      "gt_count": 4,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              256.25,
+              338.24999999999994,
+              271.75,
+              354.75
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              246.5,
+              336.5,
+              257.5,
+              348.5
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1467-_jpg.rf.f89e915e74c35e92025b6d1a7c07f036.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              90.18901824951172,
+              3.031076192855835,
+              299.7281494140625,
+              459.39190673828125
+            ],
+            "class": 1,
+            "conf": 0.886261522769928,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              44.0,
+              45.5,
+              130.0,
+              214.50000000000003
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1593-_jpg.rf.6b53461f8f68ef7101e05bf7651a276a.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              122.11080932617188,
+              1.0402129888534546,
+              336.9151916503906,
+              516.1162719726562
+            ],
+            "class": 1,
+            "conf": 0.8125523924827576,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              64.0,
+              53.499999999999986,
+              188.00000000000003,
+              276.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1503-_jpg.rf.ec4abcaffaa69c5cd7343ab81d9a79b9.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              389.76129150390625,
+              50.48076248168945,
+              575.5879516601562,
+              550.8779907226562
+            ],
+            "class": 1,
+            "conf": 0.7480977177619934,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              195.99999999999997,
+              82.0,
+              588.0,
+              400.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0079_jpg.rf.3d0621657a1a47103ad818cdf00ed7b6.jpg",
+      "gt_count": 7,
+      "pred_count": 6,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              521.0,
+              285.5,
+              531.0,
+              300.5
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              355.0,
+              303.0,
+              365.0,
+              319.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1028-_jpg.rf.0c6a1c98c0ea4ff789bc3ca581189e2b.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              324.733642578125,
+              110.97725677490234,
+              540.7521362304688,
+              501.2475280761719
+            ],
+            "class": 1,
+            "conf": 0.8466588854789734,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              173.0,
+              77.0,
+              519.0,
+              263.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-15-_jpg.rf.ff7e921e0b8a2a55f7023cda76ab5289.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              325.2470703125,
+              104.0217056274414,
+              527.3206176757812,
+              551.2783813476562
+            ],
+            "class": 1,
+            "conf": 0.7602625489234924,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              163.5,
+              148.99999999999997,
+              488.5,
+              485.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0197_jpg.rf.f0c63f1e4f42a0603ac0a6eabc74b883.jpg",
+      "gt_count": 4,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              371.0,
+              343.5,
+              388.00000000000006,
+              361.5
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              385.5,
+              341.5,
+              397.5,
+              354.49999999999994
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0061_jpg.rf.3c67618c4e63a541d3088c5994b58a2e.jpg",
+      "gt_count": 8,
+      "pred_count": 8,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              509.3854675292969,
+              329.38409423828125,
+              521.65576171875,
+              352.20751953125
+            ],
+            "class": 3,
+            "conf": 0.5078595280647278,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              237.75,
+              318.5,
+              250.25,
+              340.50000000000006
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1543-_jpg.rf.245ed0e4025842d53bd5319b68ac6253.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              352.5715026855469,
+              130.38217163085938,
+              555.1695556640625,
+              522.7706298828125
+            ],
+            "class": 1,
+            "conf": 0.5405747890472412,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              210.49999999999997,
+              90.49999999999999,
+              623.5,
+              347.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1555-_jpg.rf.514cc2c3bca298886c33b23369af90b1.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              394.51153564453125,
+              47.42481231689453,
+              606.824462890625,
+              546.4020385742188
+            ],
+            "class": 1,
+            "conf": 0.8433352112770081,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              201.50000000000003,
+              120.0,
+              608.5,
+              400.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1488-_jpg.rf.a61ff4a79deab646b2bab9649b53038d.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              386.29827880859375,
+              136.71145629882812,
+              549.30029296875,
+              562.8931274414062
+            ],
+            "class": 1,
+            "conf": 0.9927229285240173,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              195.99999999999997,
+              121.5,
+              584.0,
+              482.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1039-_jpg.rf.7b2c082e0a2117046c21f3d4de1e941b.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              398.591552734375,
+              80.2141342163086,
+              589.3245849609375,
+              550.2836303710938
+            ],
+            "class": 1,
+            "conf": 0.7668389081954956,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              232.5,
+              110.5,
+              697.5,
+              355.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1442-_jpg.rf.5b289cce548281c7f3de6c74c355a6cf.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              165.98841857910156,
+              76.9468765258789,
+              320.7829284667969,
+              492.9458923339844
+            ],
+            "class": 1,
+            "conf": 0.9805487394332886,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              83.5,
+              97.49999999999999,
+              250.5,
+              372.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1505-_jpg.rf.26614edf5a47b6782e160d7880599b8e.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              51.59873962402344,
+              69.93207550048828,
+              169.71084594726562,
+              284.5144958496094
+            ],
+            "class": 1,
+            "conf": 0.9052053689956665,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              37.0,
+              43.999999999999986,
+              89.00000000000001,
+              220.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1412-_jpg.rf.c5b0449b102283b0fdb122eb3e86a3a5.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              220.48886108398438,
+              57.85158157348633,
+              393.92388916015625,
+              486.7720947265625
+            ],
+            "class": 1,
+            "conf": 0.9756454229354858,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              110.00000000000001,
+              18.500000000000007,
+              334.00000000000006,
+              159.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-103-_jpg.rf.14450a59ec0c53112838780fdd64a303.jpg",
+      "gt_count": 2,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              995.6068725585938,
+              521.6500244140625,
+              1627.144287109375,
+              1080.0
+            ],
+            "class": 1,
+            "conf": 0.9094006419181824,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              493.0,
+              431.5,
+              1480.9999999999998,
+              1316.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Bad-Weather-_mp4-0263_jpg.rf.abcb8a128ea9e019f75c2ffd4a0e10f5.jpg",
+      "gt_count": 5,
+      "pred_count": 5,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              190.49105834960938,
+              350.4305725097656,
+              201.61727905273438,
+              367.9524230957031
+            ],
+            "class": 3,
+            "conf": 0.516007661819458,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              187.5,
+              346.5,
+              197.5,
+              365.50000000000006
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1009-_jpg.rf.06758a6aafcaae58dfc3e8d207cc94bc.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              402.31781005859375,
+              202.23719787597656,
+              606.7875366210938,
+              564.1818237304688
+            ],
+            "class": 1,
+            "conf": 0.9348563551902771,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              282.0,
+              96.50000000000001,
+              827.9999999999999,
+              333.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0059_jpg.rf.f2c8b64e8f72fcc4e8a2d9968f74cf79.jpg",
+      "gt_count": 11,
+      "pred_count": 14,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              180.16949462890625,
+              298.47161865234375,
+              191.87908935546875,
+              318.91693115234375
+            ],
+            "class": 3,
+            "conf": 0.7387235760688782,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              51.00000000000001,
+              312.0,
+              62.0,
+              333.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1407-_jpg.rf.eb952aa7be710cb1889b134a20d6a561.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              245.96487426757812,
+              108.90081024169922,
+              396.9765930175781,
+              411.2615051269531
+            ],
+            "class": 1,
+            "conf": 0.9667946100234985,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              123.5,
+              125.0,
+              368.5,
+              438.99999999999994
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0195_jpg.rf.581df577ae5f5d56c7c4bc6fd63a6d47.jpg",
+      "gt_count": 7,
+      "pred_count": 7,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              452.0,
+              316.0,
+              463.0,
+              328.00000000000006
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              443.00000000000006,
+              309.0,
+              451.0,
+              325.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1534-_jpg.rf.5fc65ea11efbb720f5f1d7a72dca2b07.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              404.9591979980469,
+              6.47035551071167,
+              642.9650268554688,
+              526.5538330078125
+            ],
+            "class": 1,
+            "conf": 0.994288444519043,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              228.0,
+              15.00000000000001,
+              696.0,
+              163.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1400-_jpg.rf.2ca9cef18de982ff3b7f4ee7adc3dce0.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              530.468994140625,
+              179.9136505126953,
+              704.0,
+              535.5510864257812
+            ],
+            "class": 1,
+            "conf": 0.812703549861908,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              298.0,
+              124.50000000000003,
+              890.0,
+              445.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1549-_jpg.rf.3fb0c6dc3547f5760467c1ead13ba08c.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              407.6123046875,
+              142.7119598388672,
+              583.43115234375,
+              548.478759765625
+            ],
+            "class": 1,
+            "conf": 0.9844316840171814,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              225.0,
+              122.5,
+              677.0,
+              417.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1524-_jpg.rf.3e6bbfd50fda3f1a39072026688b11e9.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              377.3777770996094,
+              0.0,
+              429.97308349609375,
+              205.92730712890625
+            ],
+            "class": 1,
+            "conf": 0.629248857498169,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              193.0,
+              9.0,
+              577.0,
+              71.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0057_jpg.rf.f8ceaca81b4e6fcbc951ab4bc8550672.jpg",
+      "gt_count": 12,
+      "pred_count": 13,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              515.6464233398438,
+              588.573974609375,
+              541.2495727539062,
+              633.853759765625
+            ],
+            "class": 3,
+            "conf": 0.5705037713050842,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              620.5,
+              325.0,
+              630.5,
+              345.99999999999994
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1584-_jpg.rf.76c0c982a1a39b7ef253ce448fc8cb4b.jpg",
+      "gt_count": 2,
+      "pred_count": 0,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              66.5,
+              245.00000000000003,
+              197.5,
+              791.0
+            ],
+            "class": 1,
+            "matched": false
+          },
+          {
+            "box": [
+              157.50000000000003,
+              267.0,
+              462.5,
+              842.9999999999999
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0053_jpg.rf.1384cff02ea9e59d8fd9288b3810d1cc.jpg",
+      "gt_count": 5,
+      "pred_count": 8,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              603.1304931640625,
+              360.48468017578125,
+              615.4776611328125,
+              384.90826416015625
+            ],
+            "class": 3,
+            "conf": 0.6737516522407532,
+            "matched": false
+          },
+          {
+            "box": [
+              477.06781005859375,
+              346.5634765625,
+              490.27935791015625,
+              369.82080078125
+            ],
+            "class": 3,
+            "conf": 0.6558465361595154,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1539-_jpg.rf.921705e185db7932a12e17ace62496c4.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              388.2665710449219,
+              108.78056335449219,
+              610.8635864257812,
+              556.5011596679688
+            ],
+            "class": 1,
+            "conf": 0.9375789761543274,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              196.49999999999994,
+              197.0,
+              587.5,
+              617.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1492-_jpg.rf.1ea5833fc04270a218673c8aa658ca81.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              179.9427490234375,
+              177.54190063476562,
+              415.54486083984375,
+              574.0805053710938
+            ],
+            "class": 1,
+            "conf": 0.9034386873245239,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              96.49999999999999,
+              169.50000000000003,
+              273.49999999999994,
+              606.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1458-_jpg.rf.fd09547e22a74675d794347fb4579831.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              45.53727340698242,
+              191.00099182128906,
+              295.4017333984375,
+              552.2724609375
+            ],
+            "class": 1,
+            "conf": 0.9449499249458313,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              23.5,
+              97.49999999999999,
+              68.5,
+              392.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0059_jpg.rf.383018dfd8adf9a943123eefd38bf312.jpg",
+      "gt_count": 11,
+      "pred_count": 13,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              558.6175537109375,
+              333.4552001953125,
+              570.8011474609375,
+              354.1363525390625
+            ],
+            "class": 3,
+            "conf": 0.7541025876998901,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              578.0,
+              336.0,
+              589.0,
+              356.99999999999994
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1500-_jpg.rf.a1d1f017a360ea6f7e2e0b7e927746a2.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              253.07180786132812,
+              0.9807281494140625,
+              353.6854248046875,
+              355.4541320800781
+            ],
+            "class": 1,
+            "conf": 0.9543307423591614,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              128.5,
+              13.999999999999998,
+              383.50000000000006,
+              223.99999999999997
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Bad-Weather-_mp4-0198_jpg.rf.ca1f80f737a9f89a1ebb58add8018670.jpg",
+      "gt_count": 1,
+      "pred_count": 3,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              0.0,
+              393.63623046875,
+              11.880542755126953,
+              449.49609375
+            ],
+            "class": 3,
+            "conf": 0.8011106252670288,
+            "matched": false
+          },
+          {
+            "box": [
+              366.46728515625,
+              414.854248046875,
+              375.64398193359375,
+              435.048095703125
+            ],
+            "class": 3,
+            "conf": 0.5648864507675171,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1385-_jpg.rf.3d4df1a7768f4d96ec7b1f00b7581581.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              274.3365173339844,
+              1.7624573707580566,
+              489.3592834472656,
+              495.7825012207031
+            ],
+            "class": 1,
+            "conf": 0.9060214757919312,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              137.5,
+              91.00000000000003,
+              412.5,
+              441.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1617-_jpg.rf.d026c2eefeb8784f463cc903afe27d6b.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              331.1993713378906,
+              51.250892639160156,
+              540.6796875,
+              527.9031372070312
+            ],
+            "class": 1,
+            "conf": 0.7595425248146057,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              163.0,
+              167.99999999999997,
+              489.0,
+              538.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1553-_jpg.rf.a813d5d024f78ab3b33bccd0e9d85fd0.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              420.2406311035156,
+              248.93569946289062,
+              606.3728637695312,
+              576.0
+            ],
+            "class": 1,
+            "conf": 0.979198694229126,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              211.00000000000003,
+              224.5,
+              633.0,
+              705.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0080_jpg.rf.7a96fb512042c03eae9ab8f6f0e6b8bb.jpg",
+      "gt_count": 5,
+      "pred_count": 5,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              339.2791748046875,
+              315.23297119140625,
+              349.8184814453125,
+              333.38311767578125
+            ],
+            "class": 3,
+            "conf": 0.5394995212554932,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              3.5,
+              380.0,
+              14.500000000000002,
+              410.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1525-_jpg.rf.1b03e19fe97cb3c6c3e9b77ccbc0320b.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              331.0838317871094,
+              15.537332534790039,
+              508.0760192871094,
+              457.0587463378906
+            ],
+            "class": 1,
+            "conf": 0.9888433218002319,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              166.5,
+              29.499999999999993,
+              501.5,
+              118.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1521-_jpg.rf.8ac123d913642530209f821d42055154.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              358.1263427734375,
+              84.4935531616211,
+              564.4722290039062,
+              566.8810424804688
+            ],
+            "class": 1,
+            "conf": 0.9445202946662903,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              203.00000000000003,
+              7.499999999999989,
+              619.0000000000001,
+              220.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1594-_jpg.rf.a662d251e0209929cc94118676ec8528.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              70.98403930664062,
+              163.527587890625,
+              318.1200256347656,
+              483.05267333984375
+            ],
+            "class": 1,
+            "conf": 0.93089359998703,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              41.5,
+              94.50000000000001,
+              122.5,
+              367.5
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1021-_jpg.rf.fbaf4997ebd6fee433afb334ad47f440.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              283.9150695800781,
+              106.39677429199219,
+              505.5033264160156,
+              546.656494140625
+            ],
+            "class": 1,
+            "conf": 0.6586576104164124,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              146.0,
+              162.0,
+              434.0,
+              594.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1465-_jpg.rf.3b51d80c68381cb1961c32f8f3698e42.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              320.0506591796875,
+              94.46392822265625,
+              550.281494140625,
+              490.74456787109375
+            ],
+            "class": 1,
+            "conf": 0.799132764339447,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              161.5,
+              181.00000000000003,
+              482.50000000000006,
+              563.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1507-_jpg.rf.ef721e003dec58aa3c45966c8e823325.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              352.6068115234375,
+              28.081018447875977,
+              625.2536010742188,
+              569.2542724609375
+            ],
+            "class": 1,
+            "conf": 0.9721850752830505,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              183.49999999999997,
+              131.0,
+              530.5,
+              483.00000000000006
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0069_jpg.rf.0c91b28d8f32e0ead86715ac2ab30139.jpg",
+      "gt_count": 11,
+      "pred_count": 9,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              267.25,
+              255.75,
+              275.75,
+              274.25
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              146.25,
+              296.25,
+              158.75,
+              317.75
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0195_jpg.rf.ffd12dad48563eef0b83a9bfa341b727.jpg",
+      "gt_count": 7,
+      "pred_count": 7,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              183.0,
+              320.0,
+              194.00000000000003,
+              333.0
+            ],
+            "class": 3,
+            "matched": false
+          },
+          {
+            "box": [
+              194.00000000000003,
+              312.5,
+              203.0,
+              329.5
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-3316-_jpg.rf.0768ad57a87d056373afdbed0a6bc45a.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              18.423505783081055,
+              81.34387969970703,
+              183.42901611328125,
+              280.9974365234375
+            ],
+            "class": 0,
+            "conf": 0.8096355199813843,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              94.00000000000001,
+              81.0,
+              183.0,
+              195.0
+            ],
+            "class": 0,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-1540-_jpg.rf.3e5d2aba5cc37ef1be53bc5bc8d79606.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              316.9259033203125,
+              101.93216705322266,
+              561.9317016601562,
+              480.8612060546875
+            ],
+            "class": 1,
+            "conf": 0.9791570901870728,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              157.0,
+              193.00000000000003,
+              467.0,
+              613.0
+            ],
+            "class": 1,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-2297-_jpg.rf.6521adc22685f4ddc59b93a7bf65ae43.jpg",
+      "gt_count": 1,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              267.3061218261719,
+              197.61825561523438,
+              454.7356872558594,
+              574.3320922851562
+            ],
+            "class": 0,
+            "conf": 0.54351806640625,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              314.0,
+              214.99999999999997,
+              393.99999999999994,
+              418.0
+            ],
+            "class": 0,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0198_jpg.rf.ff61c4e0426ad3639bc588442b4abede.jpg",
+      "gt_count": 4,
+      "pred_count": 4,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              372.11181640625,
+              362.1925048828125,
+              386.60406494140625,
+              385.362060546875
+            ],
+            "class": 3,
+            "conf": 0.5216396450996399,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              373.5,
+              361.0,
+              384.49999999999994,
+              373.00000000000006
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/ebike_2020-566-_jpg.rf.fd59f6bab3579e8e5bf789d4817ab11f.jpg",
+      "gt_count": 1,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              156.9124755859375,
+              269.0572204589844,
+              363.9945373535156,
+              573.9557495117188
+            ],
+            "class": 0,
+            "conf": 0.7970258593559265,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              242.0,
+              269.0,
+              345.00000000000006,
+              539.0
+            ],
+            "class": 0,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0198_jpg.rf.92951599f483c66d755c5699208a9449.jpg",
+      "gt_count": 4,
+      "pred_count": 4,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              379.4558410644531,
+              349.87237548828125,
+              391.9729309082031,
+              371.509765625
+            ],
+            "class": 3,
+            "conf": 0.552490234375,
+            "matched": false
+          }
+        ],
+        "extra_labels": [
+          {
+            "box": [
+              379.5,
+              350.0,
+              390.5,
+              362.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0049_jpg.rf.7d1a5266883061fcd38fd73ff81dcf7c.jpg",
+      "gt_count": 7,
+      "pred_count": 6,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              572.5,
+              332.0,
+              586.5,
+              355.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0258_jpg.rf.c60b94011f04c8a13cd0548698a1cd95.jpg",
+      "gt_count": 8,
+      "pred_count": 7,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              470.0,
+              314.75,
+              479.00000000000006,
+              337.25
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0198_jpg.rf.62f07d0232138ece94b56bb152aed524.jpg",
+      "gt_count": 4,
+      "pred_count": 4,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              374.49999999999994,
+              364.0,
+              386.5,
+              376.99999999999994
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Bad-Weather-_mp4-0158_jpg.rf.2eed7503c9492db244ebee0bb53c9423.jpg",
+      "gt_count": 2,
+      "pred_count": 1,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              371.5,
+              232.24999999999997,
+              381.5,
+              256.75
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0074_jpg.rf.0c85095a6d50c2eee7eda96f49a8355b.jpg",
+      "gt_count": 8,
+      "pred_count": 9,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              454.04443359375,
+              589.602783203125,
+              486.8106689453125,
+              639.3873291015625
+            ],
+            "class": 3,
+            "conf": 0.5445641875267029,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0092_jpg.rf.619cff00ad80b41f67ad0bbb4c7c3e26.jpg",
+      "gt_count": 4,
+      "pred_count": 5,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              111.05038452148438,
+              530.9890747070312,
+              135.7432098388672,
+              576.7249145507812
+            ],
+            "class": 3,
+            "conf": 0.6823745369911194,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0274_jpg.rf.101f18d3eb19f586afd55ab007cf220b.jpg",
+      "gt_count": 3,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              555.5,
+              346.50000000000006,
+              566.5,
+              367.5
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0191_jpg.rf.1576b4a5da296820f8863215b54273cf.jpg",
+      "gt_count": 4,
+      "pred_count": 5,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              9.110601425170898,
+              354.992431640625,
+              20.82264518737793,
+              376.4005126953125
+            ],
+            "class": 3,
+            "conf": 0.7336359620094299,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0265_jpg.rf.8d9b024ab39618c15d30bfde74d22d3c.jpg",
+      "gt_count": 6,
+      "pred_count": 7,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              3.7370948791503906,
+              381.75384521484375,
+              17.19953155517578,
+              411.80157470703125
+            ],
+            "class": 3,
+            "conf": 0.7496879696846008,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0230_jpg.rf.6c66b0d920c514008e4488061f9f699a.jpg",
+      "gt_count": 1,
+      "pred_count": 0,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              596.25,
+              507.75000000000006,
+              610.75,
+              531.25
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Bad-Weather-_mp4-0068_jpg.rf.049c9b8c7a5c67c5dd5d6c1f252afa6c.jpg",
+      "gt_count": 1,
+      "pred_count": 0,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              0.0,
+              197.99999999999997,
+              2.0,
+              230.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0287_jpg.rf.609c2ece93482fa8c0a2032f364754bd.jpg",
+      "gt_count": 3,
+      "pred_count": 2,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              226.5,
+              300.0,
+              237.5,
+              318.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0116_jpg.rf.b99e5ec2a2d7a06228072372e38856d9.jpg",
+      "gt_count": 3,
+      "pred_count": 5,
+      "issues": {
+        "missing_labels": [
+          {
+            "box": [
+              6.32929801940918,
+              293.2676696777344,
+              16.412212371826172,
+              311.8904724121094
+            ],
+            "class": 3,
+            "conf": 0.6279808282852173,
+            "matched": false
+          }
+        ],
+        "extra_labels": [],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    },
+    {
+      "image": "data/merged_dataset/images/train/helmet_Motorcycle-Helmet-Good-Weather-_mp4-0056_jpg.rf.74b92e4e70fed67853b0155d8dfc63b2.jpg",
+      "gt_count": 10,
+      "pred_count": 9,
+      "issues": {
+        "missing_labels": [],
+        "extra_labels": [
+          {
+            "box": [
+              240.0,
+              301.0,
+              252.99999999999997,
+              319.0
+            ],
+            "class": 3,
+            "matched": false
+          }
+        ],
+        "low_conf_matches": []
+      },
+      "has_issues": true
+    }
+  ]
+}

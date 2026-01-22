@@ -14,7 +14,7 @@ services:
     environment:
       - SECRET_KEY=${SECRET_KEY:-dev-secret-key}
       - DATABASE_URL=mysql+pymysql://root:${MYSQL_ROOT_PASSWORD:-password}@db:3306/ebike_detection
-      - MODEL_PATH=/app/models/best.pt
+      - MODEL_PATH=/app/models/bifpn_best.pt
     depends_on:
       db:
         condition: service_healthy

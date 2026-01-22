@@ -10,13 +10,14 @@ class VideoProcessor:
         self.detector = detector
         self.output_folder = Config.OUTPUT_FOLDER
 
-    def process_video(self, video_path, output_path=None, callback=None):
+    def process_video(self, video_path, output_path=None, callback=None, use_tracking=True):
         """
         处理视频文件
         Args:
             video_path: 输入视频路径
             output_path: 输出视频路径
             callback: 进度回调函数
+            use_tracking: 是否使用ByteTrack跟踪
         Returns:
             all_violations: 所有违规记录
         """
@@ -38,7 +39,12 @@ class VideoProcessor:
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
+        # 重置跟踪器
+        if use_tracking:
+            self.detector.reset_tracker()
+
         all_violations = []
+        unique_violations = []
         frame_number = 0
 
         while True:
@@ -46,15 +52,27 @@ class VideoProcessor:
             if not ret:
                 break
 
-            # 检测
-            detections = self.detector.detect(frame)
-            violations = self.detector.detect_violations(detections)
+            # 检测（带跟踪或不带）
+            if use_tracking:
+                detections = self.detector.track(frame)
+            else:
+                detections = self.detector.detect(frame)
 
-            # 记录违规
+            violations, new_violations = self.detector.detect_violations(
+                detections, use_tracking=use_tracking
+            )
+
+            # 记录所有违规（当前帧）
             for v in violations:
                 v['frame_number'] = frame_number
                 v['timestamp'] = frame_number / fps
                 all_violations.append(v)
+
+            # 记录唯一违规（去重后）
+            for v in new_violations:
+                v['frame_number'] = frame_number
+                v['timestamp'] = frame_number / fps
+                unique_violations.append(v)
 
             # 绘制结果
             result_frame = self.detector.draw_results(frame, detections, violations)
@@ -72,21 +90,32 @@ class VideoProcessor:
         return {
             'output_path': output_path,
             'violations': all_violations,
+            'unique_violations': unique_violations,
             'total_frames': total_frames,
-            'fps': fps
+            'fps': fps,
+            'tracking_enabled': use_tracking
         }
 
-    def process_stream(self, stream_url):
+    def process_stream(self, stream_url, use_tracking=True):
         """处理实时视频流（生成器）"""
         cap = cv2.VideoCapture(stream_url)
+
+        if use_tracking:
+            self.detector.reset_tracker()
 
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
 
-            detections = self.detector.detect(frame)
-            violations = self.detector.detect_violations(detections)
+            if use_tracking:
+                detections = self.detector.track(frame)
+            else:
+                detections = self.detector.detect(frame)
+
+            violations, _ = self.detector.detect_violations(
+                detections, use_tracking=use_tracking
+            )
             result_frame = self.detector.draw_results(frame, detections, violations)
 
             # 编码为JPEG
