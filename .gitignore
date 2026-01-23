@@ -50,3 +50,8 @@ Thumbs.db
 *.tmp
 *.temp
 .ace-tool/
+
+# Node.js (不需要)
+node_modules/
+package.json
+package-lock.json
