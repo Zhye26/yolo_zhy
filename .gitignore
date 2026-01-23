@@ -55,3 +55,7 @@ Thumbs.db
 node_modules/
 package.json
 package-lock.json
+
+# 预训练模型 (太大)
+*.pt
+!models/.gitkeep
