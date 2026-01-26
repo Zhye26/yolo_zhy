@@ -128,3 +128,62 @@ class Settings:
 
 # Global settings instance
 settings = Settings()
+
+
+class FlaskConfig:
+    """Flask-compatible configuration class."""
+
+    def __init__(self, s: Settings = None):
+        self._settings = s or settings
+
+    @property
+    def SECRET_KEY(self):
+        return self._settings.app.secret_key
+
+    @property
+    def DEBUG(self):
+        return self._settings.app.debug
+
+    @property
+    def SQLALCHEMY_DATABASE_URI(self):
+        return self._settings.database.url
+
+    @property
+    def SQLALCHEMY_TRACK_MODIFICATIONS(self):
+        return self._settings.database.track_modifications
+
+    @property
+    def UPLOAD_FOLDER(self):
+        return str(self._settings.storage.upload_folder)
+
+    @property
+    def OUTPUT_FOLDER(self):
+        return str(self._settings.storage.output_folder)
+
+    @property
+    def MAX_CONTENT_LENGTH(self):
+        return self._settings.storage.max_content_length
+
+    @property
+    def ALLOWED_EXTENSIONS(self):
+        return self._settings.storage.allowed_extensions
+
+    @property
+    def MODEL_PATH(self):
+        return str(self._settings.model.model_path)
+
+    @property
+    def CONFIDENCE_THRESHOLD(self):
+        return self._settings.model.conf_thresh
+
+    @property
+    def IOU_THRESHOLD(self):
+        return self._settings.model.iou_thresh
+
+    @property
+    def CLASS_NAMES(self):
+        return self._settings.detection.class_names
+
+
+# Flask config instance
+Config = FlaskConfig()
