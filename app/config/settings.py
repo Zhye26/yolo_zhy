@@ -7,9 +7,12 @@ from pathlib import Path
 from typing import Set, List, Optional
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Load .env.flask instead of .env (to avoid conflict with Gemini CLI)
+load_dotenv(BASE_DIR / ".env.flask")
 
 
 class AppSettings(BaseSettings):
