@@ -1,13 +1,17 @@
-from flask import Blueprint, jsonify, request, Response
+from flask import Blueprint, jsonify, request, Response, current_app
 from app.models import Detection, Violation, Statistics
-from app.services import EbikeDetector, VideoProcessor
+from app.services import EbikeDetector, VideoProcessor, session_manager, SessionState
 from app import db
 from sqlalchemy import func
 from datetime import datetime, timedelta
+import os
+import time
+import cv2
 
 bp = Blueprint('api', __name__)
 
 detector = EbikeDetector()
+
 
 
 @bp.route('/stats')
@@ -99,3 +103,131 @@ def video_stream():
         processor.process_stream(stream_url),
         mimetype='multipart/x-mixed-replace; boundary=frame'
     )
+
+
+@bp.route('/video/session/<int:detection_id>', methods=['POST'])
+def create_video_session(detection_id):
+    """创建视频处理会话"""
+    detection = Detection.query.get_or_404(detection_id)
+    if detection.file_type != 'video':
+        return jsonify({"error": "Not a video file"}), 400
+
+    video_path = os.path.join(current_app.config['UPLOAD_FOLDER'], detection.filename)
+    if not os.path.exists(video_path):
+        return jsonify({"error": "Video file not found"}), 404
+
+    existing = session_manager.get_by_detection(detection_id)
+    if existing and existing.state in (SessionState.RUNNING, SessionState.PAUSED):
+        return jsonify(existing.to_dict())
+
+    session = session_manager.create_session(detection_id, video_path)
+    return jsonify(session.to_dict())
+
+
+@bp.route('/video/session/<int:detection_id>/stats')
+def get_video_stats(detection_id):
+    """获取视频处理统计"""
+    session = session_manager.get_by_detection(detection_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+    return jsonify(session.to_dict())
+
+
+@bp.route('/video/session/<int:detection_id>/control', methods=['POST'])
+def control_video_session(detection_id):
+    """控制视频处理（暂停/继续/停止）"""
+    session = session_manager.get_by_detection(detection_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+
+    action = request.json.get('action') if request.is_json else request.form.get('action')
+    if action == 'pause':
+        session_manager.set_state(session.session_id, SessionState.PAUSED)
+    elif action == 'resume':
+        session_manager.set_state(session.session_id, SessionState.RUNNING)
+    elif action == 'stop':
+        session_manager.set_state(session.session_id, SessionState.STOPPED)
+    else:
+        return jsonify({"error": "Invalid action"}), 400
+
+    return jsonify(session.to_dict())
+
+
+@bp.route('/video/stream/<int:detection_id>')
+def video_detection_stream(detection_id):
+    """视频检测 MJPEG 流"""
+    session = session_manager.get_by_detection(detection_id)
+    if not session:
+        return jsonify({"error": "Session not found"}), 404
+
+    def generate():
+        cap = None
+        try:
+            cap = cv2.VideoCapture(session.video_path)
+            if not cap.isOpened():
+                session_manager.set_state(session.session_id, SessionState.ERROR, "Cannot open video")
+                return
+
+            session_manager.set_state(session.session_id, SessionState.RUNNING)
+            session.stats.start_time = time.time()
+            frame_count = 0
+            passenger_count = 0
+            helmet_count = 0
+            fps_start = time.time()
+            fps_frames = 0
+
+            while cap.isOpened():
+                if session.state == SessionState.STOPPED:
+                    break
+                if session.state == SessionState.PAUSED:
+                    time.sleep(0.1)
+                    continue
+
+                ret, frame = cap.read()
+                if not ret:
+                    break
+
+                detections = detector.detect(frame)
+                violations, _ = detector.detect_violations(detections, use_tracking=True)
+                result_frame = detector.draw_results(frame, detections, violations)
+
+                for v in violations:
+                    if v.get('type') == 'passenger':
+                        passenger_count += 1
+                    elif v.get('type') == 'no_helmet':
+                        helmet_count += 1
+
+                frame_count += 1
+                fps_frames += 1
+                elapsed = time.time() - fps_start
+                if elapsed >= 1.0:
+                    current_fps = fps_frames / elapsed
+                    session_manager.update_stats(
+                        session.session_id,
+                        processed_frames=frame_count,
+                        fps=current_fps,
+                        passenger_violations=passenger_count,
+                        helmet_violations=helmet_count,
+                    )
+                    fps_start = time.time()
+                    fps_frames = 0
+
+                _, buffer = cv2.imencode('.jpg', result_frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+                frame_bytes = buffer.tobytes()
+                yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
+        except GeneratorExit:
+            pass
+        finally:
+            if cap is not None:
+                cap.release()
+            session_manager.update_stats(
+                session.session_id,
+                processed_frames=frame_count if 'frame_count' in dir() else 0,
+                passenger_violations=passenger_count if 'passenger_count' in dir() else 0,
+                helmet_violations=helmet_count if 'helmet_count' in dir() else 0,
+            )
+            if session.state not in (SessionState.STOPPED, SessionState.ERROR):
+                session_manager.set_state(session.session_id, SessionState.COMPLETED)
+
+    return Response(generate(), mimetype='multipart/x-mixed-replace; boundary=frame')
