@@ -109,5 +109,6 @@ class FrameResult:
     meta: FrameMeta
     detections: List[Detection]
     tracks: List[Track]
-    violations: List[ViolationEvent]
+    active_violations: List[ViolationEvent] = field(default_factory=list)
+    new_violations: List[ViolationEvent] = field(default_factory=list)
     rendered_frame: Optional[np.ndarray] = None

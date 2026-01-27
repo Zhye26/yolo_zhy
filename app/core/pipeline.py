@@ -108,6 +108,7 @@ class FramePipeline:
         detections = self._detect(frame)
         tracks = self._track(detections, frame)
         context = FrameContext(
+            frame=frame,
             meta=meta,
             detections=detections,
             tracks=tracks,

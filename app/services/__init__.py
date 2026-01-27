@@ -7,6 +7,7 @@ from app.services.video_session import (
     SessionStats,
     session_manager,
 )
+from app.services.yolo_sam3_detector import YoloSam3Detector, CascadeResult
 
 __all__ = [
     'EbikeDetector',
@@ -16,4 +17,6 @@ __all__ = [
     'SessionState',
     'SessionStats',
     'session_manager',
+    'YoloSam3Detector',
+    'CascadeResult',
 ]
