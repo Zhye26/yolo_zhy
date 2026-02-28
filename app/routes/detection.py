@@ -58,7 +58,7 @@ def process(detection_id):
         # 图片检测
         image = cv2.imread(filepath)
         results = detector.detect(image)
-        violations = detector.detect_violations(results)
+        violations, _ = detector.detect_violations(results)
 
         # 保存结果图片
         result_image = detector.draw_results(image, results, violations)

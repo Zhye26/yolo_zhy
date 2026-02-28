@@ -73,8 +73,11 @@ IDLE → CANDIDATE → ACTIVE → COOLDOWN → IDLE
 无需手动配置环境，一键启动：
 
 ```bash
-# GPU 版本
+# GPU 版本（开发）
 docker compose up -d
+
+# GPU 版本（生产，Gunicorn + 严格启动检查）
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 # CPU 版本
 docker compose -f docker-compose.cpu.yml up -d
@@ -93,8 +96,30 @@ source venv/bin/activate  # Linux/Mac
 # 安装依赖
 pip install -r requirements.txt
 
-# 启动应用
+# 启动应用（开发）
 python run.py
+
+# 启动应用（生产）
+gunicorn -c gunicorn.conf.py run:app
+```
+
+## 工程落地检查
+
+```bash
+# 1) 健康检查
+curl http://127.0.0.1:5000/api/healthz
+
+# 2) 最小冒烟测试
+python tools/smoke_test.py
+
+# 3) 强制要求所有检查通过（CI/发版前）
+python tools/smoke_test.py --require-healthy
+
+# 4) 使用当前数据库配置执行冒烟（联调环境）
+python tools/smoke_test.py --use-current-db --require-healthy
+
+# 5) 发版前一键检查（含编译检查+smoke）
+python tools/release_check.py
 ```
 
 ## 训练模型
@@ -113,9 +138,12 @@ yolo detect train data=data/merged_dataset/data.yaml model=yolov8n.pt epochs=100
 
 | 配置项 | 默认值 | 说明 |
 |--------|--------|------|
-| `MODEL_PATH` | `models/best.pt` | 模型路径 |
+| `MODEL_PATH` | `models/bifpn_best.pt` | 模型路径 |
 | `conf_thresh` | 0.5 | 置信度阈值 |
 | `iou_thresh` | 0.45 | IoU 阈值 |
+| `STARTUP_STRICT` | false | 启动自检失败时是否中止进程 |
+| `STARTUP_CHECK_DATABASE` | true | 启动时检查数据库连通性 |
+| `STARTUP_CHECK_MODEL` | true | 启动时检查模型文件是否存在 |
 | `min_frames_to_confirm` | 3 | 违规确认帧数 |
 | `cooldown_frames` | 30 | 冷却帧数 |
 

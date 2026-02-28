@@ -2,7 +2,8 @@ from flask import Blueprint, jsonify, request, Response, current_app
 from app.models import Detection, Violation, Statistics
 from app.services import EbikeDetector, VideoProcessor, session_manager, SessionState
 from app import db
-from sqlalchemy import func
+from app.config import settings
+from sqlalchemy import func, text
 from datetime import datetime, timedelta
 import os
 import time
@@ -12,6 +13,44 @@ bp = Blueprint('api', __name__)
 
 detector = EbikeDetector()
 
+
+@bp.route('/healthz')
+def health_check():
+    """Application health check endpoint."""
+    model_path = settings.model.model_path
+
+    checks = {
+        'model': {
+            'enabled': settings.startup.check_model,
+            'ok': True,
+            'detail': 'skipped',
+            'path': str(model_path),
+        },
+        'database': {
+            'enabled': settings.startup.check_database,
+            'ok': True,
+            'detail': 'skipped',
+        },
+    }
+
+    if settings.startup.check_model:
+        model_ok = model_path.exists() and model_path.is_file()
+        checks['model']['ok'] = model_ok
+        checks['model']['detail'] = 'ok' if model_ok else 'model file missing'
+
+    if settings.startup.check_database:
+        try:
+            db.session.execute(text('SELECT 1'))
+            checks['database']['detail'] = 'ok'
+        except Exception as exc:
+            checks['database']['ok'] = False
+            checks['database']['detail'] = str(exc)
+
+    healthy = checks['model']['ok'] and checks['database']['ok']
+    return jsonify({
+        'status': 'ok' if healthy else 'degraded',
+        'checks': checks,
+    }), (200 if healthy else 503)
 
 
 @bp.route('/stats')
@@ -162,17 +201,22 @@ def video_detection_stream(detection_id):
 
     def generate():
         cap = None
+        frame_count = 0
+        passenger_count = 0
+        helmet_count = 0
+
         try:
             cap = cv2.VideoCapture(session.video_path)
             if not cap.isOpened():
                 session_manager.set_state(session.session_id, SessionState.ERROR, "Cannot open video")
                 return
 
+            video_fps = cap.get(cv2.CAP_PROP_FPS)
+            if not video_fps or video_fps <= 0:
+                video_fps = 30.0
+
             session_manager.set_state(session.session_id, SessionState.RUNNING)
             session.stats.start_time = time.time()
-            frame_count = 0
-            passenger_count = 0
-            helmet_count = 0
             fps_start = time.time()
             fps_frames = 0
 
@@ -188,14 +232,30 @@ def video_detection_stream(detection_id):
                     break
 
                 detections = detector.detect(frame)
-                violations, _ = detector.detect_violations(detections, use_tracking=True)
+                violations, new_violations = detector.detect_violations(
+                    detections, use_tracking=True
+                )
                 result_frame = detector.draw_results(frame, detections, violations)
 
-                for v in violations:
-                    if v.get('type') == 'passenger':
+                # Persist only newly emitted violation events to avoid per-frame duplicates.
+                for v in new_violations:
+                    violation_type = v.get('type')
+                    if violation_type == 'passenger':
                         passenger_count += 1
-                    elif v.get('type') == 'no_helmet':
+                    elif violation_type == 'no_helmet':
                         helmet_count += 1
+
+                    db.session.add(Violation(
+                        detection_id=detection_id,
+                        violation_type=violation_type,
+                        frame_number=frame_count,
+                        timestamp=frame_count / video_fps,
+                        bbox=v.get('bbox'),
+                        confidence=v.get('confidence', 0.0),
+                    ))
+
+                if new_violations:
+                    db.session.commit()
 
                 frame_count += 1
                 fps_frames += 1
@@ -218,14 +278,17 @@ def video_detection_stream(detection_id):
 
         except GeneratorExit:
             pass
+        except Exception as exc:  # pragma: no cover - runtime dependent
+            db.session.rollback()
+            session_manager.set_state(session.session_id, SessionState.ERROR, str(exc))
         finally:
             if cap is not None:
                 cap.release()
             session_manager.update_stats(
                 session.session_id,
-                processed_frames=frame_count if 'frame_count' in dir() else 0,
-                passenger_violations=passenger_count if 'passenger_count' in dir() else 0,
-                helmet_violations=helmet_count if 'helmet_count' in dir() else 0,
+                processed_frames=frame_count,
+                passenger_violations=passenger_count,
+                helmet_violations=helmet_count,
             )
             if session.state not in (SessionState.STOPPED, SessionState.ERROR):
                 session_manager.set_state(session.session_id, SessionState.COMPLETED)

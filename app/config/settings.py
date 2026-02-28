@@ -51,7 +51,7 @@ class StorageSettings(BaseSettings):
 
 class ModelSettings(BaseSettings):
     """YOLO model settings."""
-    model_path: Path = Field(default=BASE_DIR / "models" / "best.pt", alias="MODEL_PATH")
+    model_path: Path = Field(default=BASE_DIR / "models" / "bifpn_best.pt", alias="MODEL_PATH")
     conf_thresh: float = Field(default=0.5, ge=0.0, le=1.0)
     iou_thresh: float = Field(default=0.45, ge=0.0, le=1.0)
     use_tensorrt: bool = Field(default=False)
@@ -111,6 +111,15 @@ class ViolationSettings(BaseSettings):
     max_age_seconds: float = Field(default=5.0)
 
 
+class StartupSettings(BaseSettings):
+    """Startup/self-check behavior settings."""
+    strict: bool = Field(default=False, alias="STARTUP_STRICT")
+    check_database: bool = Field(default=True, alias="STARTUP_CHECK_DATABASE")
+    check_model: bool = Field(default=True, alias="STARTUP_CHECK_MODEL")
+
+    model_config = SettingsConfigDict(env_prefix="", populate_by_name=True)
+
+
 class Settings:
     """Aggregated settings container."""
 
@@ -123,6 +132,7 @@ class Settings:
         self.tracking = TrackingSettings()
         self.rules = RuleSettings()
         self.violations = ViolationSettings()
+        self.startup = StartupSettings()
 
     def ensure_dirs(self) -> None:
         """Ensure all required directories exist."""
