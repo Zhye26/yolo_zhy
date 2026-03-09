@@ -1,0 +1,14 @@
+# 头盔检测数据集配置
+# Helmet Detection Dataset
+
+path: /home/ubuntu/yolo_zhy/data/helmet_dataset
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 4
+names:
+  0: full        # 全盔
+  1: half        # 半盔
+  2: invalid     # 无效佩戴
+  3: not_wearing # 未佩戴

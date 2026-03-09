@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['Electric-bicycle', 'person']
+
+roboflow:
+  workspace: zhy-1zbqz
+  project: ebike-and-human-czjtj
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/zhy-1zbqz/ebike-and-human-czjtj/dataset/1

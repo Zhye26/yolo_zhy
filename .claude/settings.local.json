@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(pdftotext:*)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:vercel.hyper.ai)",
+      "Bash(unzip:*)",
+      "WebFetch(domain:universe.roboflow.com)",
+      "Bash(docker:*)",
+      "Bash(docker-compose --version)",
+      "Bash(nvidia-smi:*)",
+      "Bash(pip install:*)",
+      "Bash(python3:*)",
+      "Bash(source:*)",
+      "Bash(python:*)",
+      "Bash(git -C /home/ubuntu/yolo_zhy status)",
+      "Bash(git -C /home/ubuntu/yolo_zhy diff --stat)",
+      "Bash(git -C /home/ubuntu/yolo_zhy log --oneline -3)",
+      "mcp__my_mcp_ccg__search_context",
+      "Skill(collaborating-with-codex)",
+      "Skill(collaborating-with-gemini)",
+      "Bash(GEMINI_API_KEY=\"$GEMINI_API_KEY\" python3:*)",
+      "Bash(gemini:*)",
+      "Bash(export GEMINI_API_KEY=\"sk-DFPtBkERINY4blBeHH44CMQispL08JQfMzloTJJsvBB9RuDL\")",
+      "Bash(export GOOGLE_GEMINI_BASE_URL=\"https://api-slb.packyapi.com\")",
+      "Bash(export GOOGLE_GEMINI_BASE_URL=\"https://www.packyapi.com\")",
+      "Bash(export GEMINI_API_KEY)",
+      "Bash(export GOOGLE_GEMINI_BASE_URL)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git rm:*)",
+      "Bash(git push:*)",
+      "Bash(pip search:*)",
+      "Bash(pip index versions:*)"
+    ]
+  }
+}

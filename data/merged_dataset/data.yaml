@@ -1,0 +1,14 @@
+# 合并数据集配置
+# 电动车违规检测完整数据集
+
+path: /home/ubuntu/yolo_zhy/data/merged_dataset
+train: images/train
+val: images/val
+test: images/test
+
+nc: 4
+names:
+  0: ebike      # 电动车
+  1: driver     # 驾驶员
+  2: passenger  # 乘客 (暂无数据，后续补充)
+  3: helmet     # 头盔
