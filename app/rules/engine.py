@@ -1,7 +1,7 @@
 """
 Rule engine that orchestrates violation detection rules.
 """
-from typing import List, Dict
+from typing import Dict, List
 from app.core.types import FrameContext, ViolationCandidate
 from app.rules.base import ViolationRule
 from app.rules.passenger import PassengerRule
@@ -21,20 +21,22 @@ class RuleEngine:
 
     def _init_default_rules(self) -> None:
         """Initialize default rules based on settings."""
-        self.rules.append(PassengerRule(enabled=settings.rules.passenger_rule_enabled))
-        self.rules.append(HelmetRule(enabled=settings.rules.helmet_rule_enabled))
-        self.rules.sort(key=lambda r: r.priority)
+        if settings.rules.passenger_rule_enabled:
+            self.rules.append(PassengerRule(enabled=True))
+        if settings.rules.helmet_rule_enabled and settings.detection.helmet_detection_enabled:
+            self.rules.append(HelmetRule(enabled=True))
+        self.rules.sort(key=lambda rule: rule.priority)
 
     def add_rule(self, rule: ViolationRule) -> None:
         """Add a custom rule to the engine."""
         self.rules.append(rule)
-        self.rules.sort(key=lambda r: r.priority)
+        self.rules.sort(key=lambda item: item.priority)
 
     def remove_rule(self, rule_id: str) -> bool:
         """Remove a rule by ID."""
-        for i, rule in enumerate(self.rules):
+        for index, rule in enumerate(self.rules):
             if rule.rule_id == rule_id:
-                self.rules.pop(i)
+                self.rules.pop(index)
                 return True
         return False
 
@@ -58,19 +60,19 @@ class RuleEngine:
         """
         all_candidates = []
         for rule in self.rules:
-            if rule.enabled:
-                candidates = rule.evaluate(context)
-                all_candidates.extend(candidates)
+            if not rule.enabled:
+                continue
+            all_candidates.extend(rule.evaluate(context))
         return all_candidates
 
     def get_rules_info(self) -> List[Dict]:
         """Get information about all registered rules."""
         return [
             {
-                "rule_id": r.rule_id,
-                "enabled": r.enabled,
-                "priority": r.priority,
-                "class": r.__class__.__name__
+                "rule_id": rule.rule_id,
+                "enabled": rule.enabled,
+                "priority": rule.priority,
+                "class": rule.__class__.__name__,
             }
-            for r in self.rules
+            for rule in self.rules
         ]

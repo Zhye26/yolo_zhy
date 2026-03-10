@@ -87,8 +87,9 @@ class EbikeDetector:
 
     def _violation_to_dict(self, v) -> Dict:
         """Convert ViolationEvent to legacy dict format."""
+        violation_type = 'overload' if v.violation_type == v.violation_type.PASSENGER else v.violation_type.name.lower()
         return {
-            'type': v.violation_type.name.lower(),
+            'type': violation_type,
             'bbox': v.bbox,
             'confidence': v.confidence,
             'track_id': v.track_id,

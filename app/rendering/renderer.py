@@ -2,9 +2,11 @@
 Detection result renderer.
 Handles drawing detections, tracks, and violations on frames.
 """
-from typing import List, Dict, Optional
+from pathlib import Path
+from typing import Dict, List, Optional
 import cv2
 import numpy as np
+from PIL import Image, ImageDraw, ImageFont
 from app.core.types import Detection, Track, ViolationEvent, FrameResult
 from app.config import settings
 
@@ -19,9 +21,16 @@ class DetectionRenderer:
         3: (255, 255, 0),  # helmet - cyan
     }
     VIOLATION_COLOR = (0, 0, 255)  # red
+    FONT_CANDIDATES = [
+        Path('/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc'),
+        Path('/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc'),
+        Path('/usr/share/fonts/truetype/arphic/ukai.ttc'),
+    ]
 
     def __init__(self, class_names: Optional[List[str]] = None):
         self.class_names = class_names or settings.detection.class_names
+        self._font_path = self._resolve_font_path()
+        self._font_cache: Dict[int, ImageFont.FreeTypeFont] = {}
 
     def render(
         self,
@@ -57,6 +66,8 @@ class DetectionRenderer:
     def _draw_detections(self, frame: np.ndarray, detections: List[Detection]) -> None:
         """Draw detection boxes."""
         for det in detections:
+            if det.class_id != settings.detection.ebike_class_id:
+                continue
             self._draw_box(
                 frame,
                 det.bbox,
@@ -69,6 +80,8 @@ class DetectionRenderer:
         """Draw tracked detection boxes."""
         for track in tracks:
             det = track.detection
+            if det.class_id != settings.detection.ebike_class_id:
+                continue
             self._draw_box(
                 frame,
                 det.bbox,
@@ -107,9 +120,78 @@ class DetectionRenderer:
             cv2.rectangle(frame, (x1, y1), (x2, y2), self.VIOLATION_COLOR, 3)
 
             label = v.description
-            if v.track_id is not None:
+            if v.track_id is not None and v.track_id >= 0:
                 label = f"ID:{v.track_id} {label}"
 
-            (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)
-            cv2.rectangle(frame, (x1, y2), (x1 + tw, y2 + th + 8), self.VIOLATION_COLOR, -1)
-            cv2.putText(frame, label, (x1, y2 + th + 4), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+            self._draw_label(
+                frame,
+                label=label,
+                origin=(x1, y2),
+                bg_color=self.VIOLATION_COLOR,
+                text_color=(255, 255, 255),
+                font_scale=0.6,
+                thickness=2,
+                prefer_unicode=True,
+            )
+
+    def _draw_label(
+        self,
+        frame: np.ndarray,
+        label: str,
+        origin: tuple[int, int],
+        bg_color: tuple[int, int, int],
+        text_color: tuple[int, int, int],
+        font_scale: float,
+        thickness: int,
+        prefer_unicode: bool = False,
+    ) -> None:
+        if prefer_unicode and any(ord(char) > 127 for char in label) and self._font_path is not None:
+            self._draw_unicode_label(frame, label, origin, bg_color, text_color, font_scale)
+            return
+
+        x, y = origin
+        (tw, th), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)
+        cv2.rectangle(frame, (x, y), (x + tw, y + th + 8), bg_color, -1)
+        cv2.putText(frame, label, (x, y + th + 4), cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_color, thickness)
+
+    def _draw_unicode_label(
+        self,
+        frame: np.ndarray,
+        label: str,
+        origin: tuple[int, int],
+        bg_color: tuple[int, int, int],
+        text_color: tuple[int, int, int],
+        font_scale: float,
+    ) -> None:
+        font_size = max(16, int(26 * font_scale))
+        font = self._get_font(font_size)
+        if font is None:
+            safe_label = label.encode('ascii', errors='ignore').decode('ascii') or 'violation'
+            self._draw_label(frame, safe_label, origin, bg_color, text_color, font_scale, 2, prefer_unicode=False)
+            return
+
+        image = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
+        draw = ImageDraw.Draw(image)
+        x, y = origin
+        left, top, right, bottom = draw.textbbox((x, y), label, font=font)
+        padding_x = 6
+        padding_y = 4
+        draw.rectangle(
+            (left - padding_x, top - padding_y, right + padding_x, bottom + padding_y),
+            fill=(bg_color[2], bg_color[1], bg_color[0]),
+        )
+        draw.text((x, y), label, font=font, fill=(text_color[2], text_color[1], text_color[0]))
+        frame[:] = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
+
+    def _resolve_font_path(self) -> Optional[Path]:
+        for path in self.FONT_CANDIDATES:
+            if path.exists():
+                return path
+        return None
+
+    def _get_font(self, font_size: int) -> Optional[ImageFont.FreeTypeFont]:
+        if self._font_path is None:
+            return None
+        if font_size not in self._font_cache:
+            self._font_cache[font_size] = ImageFont.truetype(str(self._font_path), font_size)
+        return self._font_cache[font_size]

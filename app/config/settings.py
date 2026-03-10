@@ -52,16 +52,30 @@ class StorageSettings(BaseSettings):
 class ModelSettings(BaseSettings):
     """YOLO model settings."""
     model_path: Path = Field(default=BASE_DIR / "models" / "bifpn_best.pt", alias="MODEL_PATH")
+    candidate_model_path: Path = Field(default=BASE_DIR / "yolov8n.pt")
     conf_thresh: float = Field(default=0.5, ge=0.0, le=1.0)
     iou_thresh: float = Field(default=0.45, ge=0.0, le=1.0)
     use_tensorrt: bool = Field(default=False)
     tensorrt_engine_path: Optional[Path] = Field(default=None)
     imgsz: int = Field(default=640)
+    refine_imgsz: int = Field(default=1280)
     half: bool = Field(default=True)
+    enable_candidate_refine: bool = Field(default=True)
+    candidate_conf_thresh: float = Field(default=0.15, ge=0.0, le=1.0)
+    refine_conf_thresh: float = Field(default=0.02, ge=0.0, le=1.0)
+    enable_tile_refine: bool = Field(default=False)
+    tile_refine_imgsz: int = Field(default=1280)
+    tile_refine_conf_thresh: float = Field(default=0.005, ge=0.0, le=1.0)
+    tile_refine_overlap: float = Field(default=0.40, ge=0.0, le=0.9)
+    tile_refine_width_ratio: float = Field(default=0.55, gt=0.2, lt=1.0)
+    tile_refine_height_ratio: float = Field(default=0.65, gt=0.2, lt=1.0)
+    enable_temporal_stabilize: bool = Field(default=True)
+    temporal_max_age: int = Field(default=6, ge=0)
+    temporal_decay: float = Field(default=0.88, gt=0.0, le=1.0)
 
     model_config = SettingsConfigDict(env_prefix="", populate_by_name=True)
 
-    @field_validator("model_path", mode="before")
+    @field_validator("model_path", "candidate_model_path", mode="before")
     @classmethod
     def resolve_model_path(cls, v):
         if isinstance(v, str):
@@ -81,6 +95,7 @@ class DetectionSettings(BaseSettings):
     driver_class_id: int = Field(default=1)
     passenger_class_id: int = Field(default=2)
     helmet_class_id: int = Field(default=3)
+    helmet_detection_enabled: bool = Field(default=False)
     conf_thresh: float = Field(default=0.5, ge=0.0, le=1.0)
     iou_thresh: float = Field(default=0.45, ge=0.0, le=1.0)
 
@@ -93,12 +108,17 @@ class TrackingSettings(BaseSettings):
     track_buffer: int = Field(default=30)
     match_thresh: float = Field(default=0.8)
     frame_rate: int = Field(default=30)
+    fallback_iou_thresh: float = Field(default=0.18)
+    fallback_max_missed: int = Field(default=6)
+    fallback_min_confirmed_hits: int = Field(default=2)
+    fallback_smooth_alpha: float = Field(default=0.65)
+    fallback_conf_decay: float = Field(default=0.92)
 
 
 class RuleSettings(BaseSettings):
     """Violation rule engine settings."""
     passenger_rule_enabled: bool = Field(default=True)
-    helmet_rule_enabled: bool = Field(default=True)
+    helmet_rule_enabled: bool = Field(default=False)
     helmet_head_ratio: float = Field(default=0.35)
     helmet_overlap_threshold: float = Field(default=0.3)
 

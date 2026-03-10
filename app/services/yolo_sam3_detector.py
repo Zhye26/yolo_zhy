@@ -7,7 +7,7 @@ import gc
 import cv2
 import numpy as np
 import torch
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Optional
 from dataclasses import dataclass
 
 from app.core import FramePipeline, PipelineConfig, FrameResult
@@ -33,7 +33,7 @@ class YoloSam3Detector:
         sam3_checkpoint: str = "/home/ubuntu/SAM3/sam3.pt",
         use_tensorrt: bool = False,
         mask_alpha: float = 0.4,
-        sequential_mode: bool = False,  # Memory-efficient mode
+        sequential_mode: bool = False,
     ):
         self.model_path = model_path or str(settings.model.model_path)
         self.sam3_checkpoint = sam3_checkpoint
@@ -51,7 +51,6 @@ class YoloSam3Detector:
     def load_model(self) -> bool:
         """Load YOLO and SAM3 models."""
         try:
-            # Load YOLO pipeline
             config = PipelineConfig(
                 use_tensorrt=self.use_tensorrt,
                 enable_tracking=True,
@@ -61,7 +60,6 @@ class YoloSam3Detector:
             self._pipeline = FramePipeline(config)
             self._pipeline.initialize(self.model_path)
 
-            # Load SAM3 (skip in sequential mode - load on demand)
             if not self.sequential_mode:
                 self._sam3 = SAM3Backend(
                     checkpoint_path=self.sam3_checkpoint,
@@ -69,10 +67,8 @@ class YoloSam3Detector:
                 )
                 self._sam3.load()
 
-            # Initialize renderers
             self._det_renderer = DetectionRenderer(self._pipeline.class_names)
             self._mask_renderer = MaskRenderer(alpha=self.mask_alpha)
-
             return True
         except Exception as e:
             print(f"模型加载失败: {e}")
@@ -80,14 +76,14 @@ class YoloSam3Detector:
             traceback.print_exc()
             return False
 
-    def _clear_gpu_memory(self):
+    def _clear_gpu_memory(self) -> None:
         """Clear GPU memory."""
         gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
             torch.cuda.synchronize()
 
-    def _load_sam3_on_demand(self):
+    def _load_sam3_on_demand(self) -> None:
         """Load SAM3 on demand for sequential mode."""
         if self._sam3 is None:
             self._sam3 = SAM3Backend(
@@ -97,7 +93,7 @@ class YoloSam3Detector:
         if not self._sam3.is_loaded:
             self._sam3.load()
 
-    def _unload_sam3(self):
+    def _unload_sam3(self) -> None:
         """Unload SAM3 to free GPU memory."""
         if self._sam3 is not None:
             del self._sam3.model
@@ -120,25 +116,20 @@ class YoloSam3Detector:
         if self._pipeline is None:
             self.load_model()
 
-        # Step 1: YOLO detection
         frame_result = self._pipeline.process(image)
 
-        # Step 2: SAM3 segmentation using YOLO boxes as prompts
         boxes = []
         class_ids = []
         class_names = []
-
-        # Use tracks if available, otherwise detections
         sources = frame_result.tracks or frame_result.detections
-        for item in sources:
-            det = item.detection if hasattr(item, 'detection') else item
+        segmentation_targets = self._select_segmentation_targets(sources)
+        for det in segmentation_targets:
             boxes.append(det.bbox)
             class_ids.append(det.class_id)
             class_names.append(det.class_name or self.class_names[det.class_id])
 
-        segmentations = []
+        segmentations: List[SegmentationResult] = []
         if boxes:
-            # In sequential mode, load SAM3 on demand
             if self.sequential_mode:
                 self._clear_gpu_memory()
                 self._load_sam3_on_demand()
@@ -148,7 +139,6 @@ class YoloSam3Detector:
                     image, boxes, class_ids, class_names
                 )
 
-            # In sequential mode, unload SAM3 after use
             if self.sequential_mode:
                 self._unload_sam3()
 
@@ -159,36 +149,62 @@ class YoloSam3Detector:
         self._last_result = result
         return result
 
+    def _select_segmentation_targets(self, sources) -> List:
+        """Pick only business-relevant, stable targets for SAM3."""
+        allowed_class_ids = {
+            settings.detection.ebike_class_id,
+            settings.detection.driver_class_id,
+            settings.detection.passenger_class_id,
+        }
+        selected = []
+        for item in sources:
+            det = item.detection if hasattr(item, 'detection') else item
+            if det.class_id not in allowed_class_ids:
+                continue
+            if det.confidence < 0.10:
+                continue
+            selected.append(det)
+
+        selected.sort(key=lambda det: (det.class_id, det.confidence, det.area), reverse=True)
+        return selected[:8]
+
+    def detect_violations(
+        self,
+        detections: CascadeResult,
+        use_tracking: bool = False,
+    ) -> tuple[List[Dict], List[Dict]]:
+        """Return legacy violation dicts for VideoProcessor compatibility."""
+        result = detections.frame_result
+        all_violations = [self._violation_to_dict(v) for v in result.active_violations]
+        new_violations = [self._violation_to_dict(v) for v in result.new_violations]
+        return all_violations, new_violations
+
+    def _violation_to_dict(self, violation) -> Dict:
+        return {
+            'type': violation.violation_type.name.lower(),
+            'bbox': violation.bbox,
+            'confidence': violation.confidence,
+            'track_id': violation.track_id,
+            'description': violation.description,
+        }
+
     def draw_results(
         self,
         image: np.ndarray,
         result: CascadeResult,
+        violations: Optional[List[Dict]] = None,
         show_masks: bool = True,
         show_boxes: bool = True,
         show_violations: bool = True,
     ) -> np.ndarray:
-        """
-        Draw detection and segmentation results.
-
-        Args:
-            image: BGR image
-            result: CascadeResult from detect()
-            show_masks: Whether to show segmentation masks
-            show_boxes: Whether to show bounding boxes
-            show_violations: Whether to show violation indicators
-
-        Returns:
-            Rendered image
-        """
+        """Draw detection and segmentation results."""
         output = image.copy()
 
-        # Draw masks first (as background layer)
         if show_masks and result.segmentations and self._mask_renderer:
             output = self._mask_renderer.render_masks(
                 output, result.segmentations, show_labels=False
             )
 
-        # Draw boxes and violations on top
         if show_boxes and self._det_renderer:
             output = self._det_renderer.render(
                 output,
@@ -209,5 +225,7 @@ class YoloSam3Detector:
         stats = {}
         if self._pipeline:
             stats.update(self._pipeline.get_stats())
-        stats["sam3_loaded"] = self._sam3 is not None and self._sam3.is_loaded
+        stats['sam3_loaded'] = self._sam3 is not None and self._sam3.is_loaded
+        stats['sam3_checkpoint'] = self.sam3_checkpoint
+        stats['sam3_sequential_mode'] = self.sequential_mode
         return stats

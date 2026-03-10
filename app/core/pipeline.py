@@ -78,6 +78,9 @@ class FramePipeline:
             self._tracker.reset()
         if self._deduper:
             self._deduper.reset()
+        detector_reset = getattr(self._detector, "reset", None)
+        if callable(detector_reset):
+            detector_reset()
 
     def process(
         self,

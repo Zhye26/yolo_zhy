@@ -23,6 +23,7 @@ class HelmetRule(ViolationRule):
             enabled=enabled,
             priority=2
         )
+        self.ebike_class_id = settings.detection.ebike_class_id
         self.driver_class_id = settings.detection.driver_class_id
         self.passenger_class_id = settings.detection.passenger_class_id
         self.helmet_class_id = settings.detection.helmet_class_id
@@ -36,6 +37,7 @@ class HelmetRule(ViolationRule):
         candidates = []
         helmets = []
         persons = []
+        ebikes = []
 
         sources = context.tracks if context.tracks else [
             Track(track_id=i, detection=d) for i, d in enumerate(context.detections)
@@ -45,10 +47,15 @@ class HelmetRule(ViolationRule):
             det = item.detection if isinstance(item, Track) else item
             if det.class_id == self.helmet_class_id:
                 helmets.append(det)
+            elif det.class_id == self.ebike_class_id:
+                ebikes.append(det)
             elif det.class_id in (self.driver_class_id, self.passenger_class_id):
                 persons.append((item, det))
 
         for item, person_det in persons:
+            if not self._is_rider(person_det, ebikes):
+                continue
+
             has_helmet = self._check_helmet_on_person(person_det, helmets)
             if not has_helmet:
                 track_id = item.track_id if isinstance(item, Track) else None
@@ -82,3 +89,45 @@ class HelmetRule(ViolationRule):
                 return True
 
         return False
+
+    def _is_rider(self, person: Detection, ebikes: List[Detection]) -> bool:
+        """Require driver/passenger to be spatially related to an e-bike."""
+        px1, py1, px2, py2 = person.bbox
+        point_x = (px1 + px2) / 2
+        point_y = py2
+        lower_half = [px1, py1 + (py2 - py1) * 0.45, px2, py2]
+
+        for ebike in ebikes:
+            ex1, ey1, ex2, ey2 = ebike.bbox
+            margin_x = (ex2 - ex1) * 0.12
+            margin_top = (ey2 - ey1) * 0.20
+            margin_bottom = (ey2 - ey1) * 0.12
+            if (
+                ex1 - margin_x <= point_x <= ex2 + margin_x
+                and ey1 - margin_top <= point_y <= ey2 + margin_bottom
+            ):
+                return True
+            if self._iou(lower_half, ebike.bbox) > 0.03:
+                return True
+
+        return False
+
+    def _iou(self, box_a: List[float], box_b: List[float]) -> float:
+        ax1, ay1, ax2, ay2 = box_a
+        bx1, by1, bx2, by2 = box_b
+
+        inter_x1 = max(ax1, bx1)
+        inter_y1 = max(ay1, by1)
+        inter_x2 = min(ax2, bx2)
+        inter_y2 = min(ay2, by2)
+
+        inter_w = max(0.0, inter_x2 - inter_x1)
+        inter_h = max(0.0, inter_y2 - inter_y1)
+        inter_area = inter_w * inter_h
+        if inter_area <= 0:
+            return 0.0
+
+        area_a = max(0.0, ax2 - ax1) * max(0.0, ay2 - ay1)
+        area_b = max(0.0, bx2 - bx1) * max(0.0, by2 - by1)
+        denom = area_a + area_b - inter_area
+        return inter_area / denom if denom > 0 else 0.0
