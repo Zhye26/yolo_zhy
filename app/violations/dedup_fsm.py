@@ -33,6 +33,7 @@ class ViolationStateEntry:
     hit_count: int = 0
     cooldown_start_frame: int = 0
     event_emitted: bool = False
+    confirm_hits_required: int = 0
 
 
 class ViolationDeduper:
@@ -53,6 +54,8 @@ class ViolationDeduper:
         self.min_frames = settings.violations.min_frames_to_confirm
         self.cooldown_frames = settings.violations.cooldown_frames
         self.max_gap_frames = settings.violations.max_gap_frames
+        self.render_grace_frames = 3
+        self.render_grace_min_hits = 100
 
     def reset(self) -> None:
         """Reset all state."""
@@ -98,6 +101,7 @@ class ViolationDeduper:
                     first_timestamp=timestamp,
                     last_timestamp=timestamp,
                     hit_count=1,
+                    confirm_hits_required=self._confirm_hits_required(candidate),
                 )
             else:
                 entry = self.state_store[key]
@@ -108,7 +112,7 @@ class ViolationDeduper:
                 entry.confidence = max(entry.confidence, candidate.confidence)
 
                 if entry.state == ViolationState.CANDIDATE:
-                    if entry.hit_count >= self.min_frames:
+                    if entry.hit_count >= max(1, entry.confirm_hits_required):
                         entry.state = ViolationState.ACTIVE
                         if not entry.event_emitted:
                             entry.event_emitted = True
@@ -144,15 +148,34 @@ class ViolationDeduper:
         active_violations = [
             self._create_event(entry)
             for entry in self.state_store.values()
-            if entry.state == ViolationState.ACTIVE
+            if self._should_render(entry, frame_idx)
         ]
 
         return active_violations, new_events
+
+    def _should_render(self, entry: ViolationStateEntry, frame_idx: int) -> bool:
+        if entry.state == ViolationState.ACTIVE:
+            return True
+        if entry.state != ViolationState.COOLDOWN:
+            return False
+        if entry.confirm_hits_required < self.min_frames and entry.hit_count >= max(1, entry.confirm_hits_required):
+            cooldown_elapsed = frame_idx - entry.cooldown_start_frame
+            return cooldown_elapsed <= 2
+        if entry.hit_count < self.render_grace_min_hits:
+            return False
+        cooldown_elapsed = frame_idx - entry.cooldown_start_frame
+        return cooldown_elapsed <= self.render_grace_frames
 
     def _make_key(self, candidate: ViolationCandidate) -> str:
         """Create a unique key for a violation candidate."""
         track_id = candidate.entity_ids[0] if candidate.entity_ids else "no_track"
         return f"{candidate.rule_id}_{track_id}"
+
+    def _confirm_hits_required(self, candidate: ViolationCandidate) -> int:
+        evidence_class = str(candidate.evidence.get("class", ""))
+        if evidence_class == "overload_merged_side_view":
+            return max(2, self.min_frames - 1)
+        return self.min_frames
 
     def _create_event(self, entry: ViolationStateEntry) -> ViolationEvent:
         """Create a violation event from a state entry."""

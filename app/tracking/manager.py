@@ -5,7 +5,7 @@ Encapsulates tracker lifecycle and provides clean interface for frame processing
 from typing import Dict, List, Optional, Tuple
 import math
 import numpy as np
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from app.core.types import Detection, Track
 from app.config import settings
 
@@ -29,6 +29,7 @@ class FallbackTrackState:
     """Internal lightweight track state for IoU fallback tracking."""
     track_id: int
     detection: Detection
+    match_bbox: List[float] = field(default_factory=list)
     hits: int = 1
     missed: int = 0
     age: int = 1
@@ -148,7 +149,10 @@ class TrackManager:
             for detection_index, detection in enumerate(detections):
                 if detection.class_id != state.detection.class_id:
                     continue
-                score = self._association_score(state.detection.bbox, detection.bbox)
+                score = self._association_score(
+                    state.match_bbox or state.detection.bbox,
+                    detection.bbox,
+                )
                 if score < self._score_threshold_for_class(detection.class_id):
                     continue
                 candidates.append((score, track_id, detection_index))
@@ -175,14 +179,18 @@ class TrackManager:
 
     def _update_fallback_track(self, track_id: int, detection: Detection) -> None:
         state = self._fallback_tracks[track_id]
-        smoothed_bbox = self._smooth_bbox(state.detection.bbox, detection.bbox)
+        smoothed_bbox = self._smooth_bbox(
+            state.match_bbox or state.detection.bbox,
+            detection.bbox,
+        )
         confidence = max(detection.confidence, state.detection.confidence * 0.85)
         state.detection = Detection(
-            bbox=smoothed_bbox,
+            bbox=list(detection.bbox),
             confidence=confidence,
             class_id=detection.class_id,
             class_name=detection.class_name,
         )
+        state.match_bbox = smoothed_bbox
         state.hits += 1
         state.missed = 0
         state.age += 1
@@ -198,6 +206,7 @@ class TrackManager:
                 class_id=detection.class_id,
                 class_name=detection.class_name,
             ),
+            match_bbox=list(detection.bbox),
         )
 
     def _prune_fallback_tracks(self) -> None:
@@ -326,7 +335,7 @@ class TrackManager:
         for det in detections:
             if any(self._track_matches_detection(track, det) for track in tracks):
                 continue
-            combined.append(Track(track_id=-1, detection=det))
+            combined.append(Track(track_id=-1, detection=det, state="untracked"))
         return combined
 
     def _track_matches_detection(self, track: Track, detection: Detection) -> bool:

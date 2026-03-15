@@ -4,10 +4,11 @@ Uses YOLO for detection and SAM3 for instance segmentation.
 Supports memory-efficient sequential loading for limited GPU memory.
 """
 import gc
+from contextlib import contextmanager
 import cv2
 import numpy as np
 import torch
-from typing import List, Dict, Optional
+from typing import Iterator, List, Dict, Optional
 from dataclasses import dataclass
 
 from app.core import FramePipeline, PipelineConfig, FrameResult
@@ -34,12 +35,14 @@ class YoloSam3Detector:
         use_tensorrt: bool = False,
         mask_alpha: float = 0.4,
         sequential_mode: bool = False,
+        task_mode: str = "all",
     ):
         self.model_path = model_path or str(settings.model.model_path)
         self.sam3_checkpoint = sam3_checkpoint
         self.use_tensorrt = use_tensorrt
         self.mask_alpha = mask_alpha
         self.sequential_mode = sequential_mode
+        self.task_mode = task_mode
         self.class_names = settings.detection.class_names
 
         self._pipeline: Optional[FramePipeline] = None
@@ -51,21 +54,22 @@ class YoloSam3Detector:
     def load_model(self) -> bool:
         """Load YOLO and SAM3 models."""
         try:
-            config = PipelineConfig(
-                use_tensorrt=self.use_tensorrt,
-                enable_tracking=True,
-                enable_rules=True,
-                enable_dedup=True,
-            )
-            self._pipeline = FramePipeline(config)
-            self._pipeline.initialize(self.model_path)
-
-            if not self.sequential_mode:
-                self._sam3 = SAM3Backend(
-                    checkpoint_path=self.sam3_checkpoint,
-                    device="cuda",
+            with self._task_settings():
+                config = PipelineConfig(
+                    use_tensorrt=self.use_tensorrt,
+                    enable_tracking=True,
+                    enable_rules=True,
+                    enable_dedup=True,
                 )
-                self._sam3.load()
+                self._pipeline = FramePipeline(config)
+                self._pipeline.initialize(self.model_path)
+
+                if not self.sequential_mode:
+                    self._sam3 = SAM3Backend(
+                        checkpoint_path=self.sam3_checkpoint,
+                        device="cuda",
+                    )
+                    self._sam3.load()
 
             self._det_renderer = DetectionRenderer(self._pipeline.class_names)
             self._mask_renderer = MaskRenderer(alpha=self.mask_alpha)
@@ -114,9 +118,11 @@ class YoloSam3Detector:
             CascadeResult with detections and segmentations
         """
         if self._pipeline is None:
-            self.load_model()
+            if not self.load_model():
+                raise RuntimeError("Failed to initialize YOLO+SAM3 pipeline.")
 
-        frame_result = self._pipeline.process(image)
+        with self._task_settings():
+            frame_result = self._pipeline.process(image)
 
         boxes = []
         class_ids = []
@@ -218,7 +224,10 @@ class YoloSam3Detector:
     def reset_tracker(self) -> None:
         """Reset tracker state for new video."""
         if self._pipeline:
-            self._pipeline.reset()
+            with self._task_settings():
+                self._pipeline.reset()
+        if self._det_renderer:
+            self._det_renderer.reset()
 
     def get_stats(self) -> Dict:
         """Get pipeline statistics."""
@@ -229,3 +238,27 @@ class YoloSam3Detector:
         stats['sam3_checkpoint'] = self.sam3_checkpoint
         stats['sam3_sequential_mode'] = self.sequential_mode
         return stats
+
+    @contextmanager
+    def _task_settings(self) -> Iterator[None]:
+        original_passenger_rule = settings.rules.passenger_rule_enabled
+        original_helmet_rule = settings.rules.helmet_rule_enabled
+        original_helmet_detection = settings.detection.helmet_detection_enabled
+        try:
+            if self.task_mode == "helmet":
+                settings.rules.passenger_rule_enabled = False
+                settings.rules.helmet_rule_enabled = True
+                settings.detection.helmet_detection_enabled = True
+            elif self.task_mode == "passenger":
+                settings.rules.passenger_rule_enabled = True
+                settings.rules.helmet_rule_enabled = False
+                settings.detection.helmet_detection_enabled = False
+            else:
+                settings.rules.passenger_rule_enabled = True
+                settings.rules.helmet_rule_enabled = True
+                settings.detection.helmet_detection_enabled = True
+            yield
+        finally:
+            settings.rules.passenger_rule_enabled = original_passenger_rule
+            settings.rules.helmet_rule_enabled = original_helmet_rule
+            settings.detection.helmet_detection_enabled = original_helmet_detection

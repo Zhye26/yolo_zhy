@@ -14,6 +14,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # Load .env.flask instead of .env (to avoid conflict with Gemini CLI)
 load_dotenv(BASE_DIR / ".env.flask")
 
+# Keep Ultralytics runtime state inside the repo to avoid per-user profile permission issues.
+os.environ.setdefault("YOLO_CONFIG_DIR", str(BASE_DIR / ".ultralytics"))
+
 
 class AppSettings(BaseSettings):
     """Flask application settings."""
@@ -157,6 +160,7 @@ class Settings:
     def ensure_dirs(self) -> None:
         """Ensure all required directories exist."""
         self.storage.ensure_dirs()
+        Path(os.environ["YOLO_CONFIG_DIR"]).mkdir(parents=True, exist_ok=True)
 
 
 # Global settings instance

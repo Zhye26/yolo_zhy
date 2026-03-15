@@ -337,14 +337,60 @@ class UltralyticsBackend(DetectorBackend):
 
         proxies: List[Detection] = []
         for ebike in ebikes:
-            if any(self._person_matches_ebike(person.bbox, ebike.bbox) for person in drivers + passengers):
+            matched_riders = [
+                rider for rider in drivers + passengers
+                if self._person_matches_ebike(rider.bbox, ebike.bbox)
+            ]
+            related_regions = self._find_related_person_regions(ebike.bbox, person_regions)
+
+            proxies.extend(
+                self._build_rider_proxy_detections(
+                    ebike=ebike,
+                    matched_riders=matched_riders,
+                    related_regions=related_regions,
+                    helmets=helmets,
+                    frame_shape=frame_shape,
+                    rider_class_ids=(driver_class_id, passenger_class_id),
+                )
+            )
+
+        return self._filter_detections(proxies, frame_shape)
+
+    def _build_rider_proxy_detections(
+        self,
+        ebike: Detection,
+        matched_riders: List[Detection],
+        related_regions: List[Dict[str, Any]],
+        helmets: List[Detection],
+        frame_shape: Tuple[int, ...],
+        rider_class_ids: Tuple[int, int],
+    ) -> List[Detection]:
+        driver_class_id, passenger_class_id = rider_class_ids
+        proxies: List[Detection] = []
+        rider_count = len(matched_riders)
+        target_count = min(2, max(rider_count, len(related_regions)))
+
+        for region in related_regions:
+            if rider_count >= target_count:
+                break
+            if not self._is_viable_rider_proxy_region(
+                region=region,
+                ebike_bbox=ebike.bbox,
+                existing_riders=matched_riders + [proxy for proxy in proxies],
+                is_additional_rider=rider_count > 0,
+            ):
+                continue
+            if self._region_matches_any_rider(
+                region["bbox"],
+                matched_riders + [proxy for proxy in proxies],
+            ):
                 continue
 
-            region = self._find_related_person_region(ebike.bbox, person_regions)
-            if region is not None:
-                proxies.append(self._build_proxy_person_detection(region, ebike, driver_class_id))
-                continue
+            class_id = driver_class_id if rider_count == 0 else passenger_class_id
+            proxies.append(self._build_proxy_person_detection(region, ebike, class_id))
+            rider_count += 1
 
+        if rider_count == 0:
             helmet = self._find_related_helmet(ebike.bbox, helmets)
             if helmet is not None:
                 proxies.append(
@@ -356,7 +402,61 @@ class UltralyticsBackend(DetectorBackend):
                     )
                 )
 
-        return self._filter_detections(proxies, frame_shape)
+        return proxies
+
+    def _is_viable_rider_proxy_region(
+        self,
+        region: Dict[str, Any],
+        ebike_bbox: List[float],
+        existing_riders: List[Detection],
+        is_additional_rider: bool,
+    ) -> bool:
+        bbox = region["bbox"]
+        support = self._person_ebike_overlap_score(bbox, ebike_bbox)
+        x1, y1, x2, y2 = bbox
+        ex1, ey1, ex2, ey2 = ebike_bbox
+        box_w = max(1.0, x2 - x1)
+        box_h = max(1.0, y2 - y1)
+        ebike_w = max(1.0, ex2 - ex1)
+        ebike_h = max(1.0, ey2 - ey1)
+        center_x = (x1 + x2) / 2
+        bottom_y = y2
+
+        if box_w < 14 or box_h < 26:
+            return False
+        if region["confidence"] < (0.28 if is_additional_rider else 0.18) and support < (0.70 if is_additional_rider else 0.58):
+            return False
+        if not (ex1 - ebike_w * 0.10 <= center_x <= ex2 + ebike_w * 0.10):
+            return False
+        if not (ey1 - ebike_h * 0.12 <= bottom_y <= ey2 + ebike_h * 0.10):
+            return False
+
+        if is_additional_rider and not self._is_separated_additional_rider(bbox, existing_riders, ebike_bbox):
+            return False
+
+        return True
+
+    def _is_separated_additional_rider(
+        self,
+        region_bbox: List[float],
+        riders: List[Detection],
+        ebike_bbox: List[float],
+    ) -> bool:
+        if not riders:
+            return True
+
+        ebike_center_x = (ebike_bbox[0] + ebike_bbox[2]) / 2
+        region_center_x = (region_bbox[0] + region_bbox[2]) / 2
+        min_center_gap = max(18.0, (ebike_bbox[2] - ebike_bbox[0]) * 0.12)
+
+        for rider in riders:
+            rider_center_x = (rider.bbox[0] + rider.bbox[2]) / 2
+            if abs(region_center_x - rider_center_x) < min_center_gap:
+                return False
+            if abs(region_center_x - ebike_center_x) < 6.0 and abs(rider_center_x - ebike_center_x) < 6.0:
+                return False
+
+        return True
 
     def _prune_contextless_detections(
         self,
@@ -402,10 +502,16 @@ class UltralyticsBackend(DetectorBackend):
 
         kept_ebikes: List[Detection] = []
         for group in grouped.values():
+            anchor = max(
+                group,
+                key=lambda item: self._score_ebike_detection(item, detections, candidate_regions),
+            )
             kept_ebikes.append(
-                max(
-                    group,
-                    key=lambda item: self._score_ebike_detection(item, detections, candidate_regions),
+                self._expand_ebike_detection(
+                    anchor,
+                    sibling_ebikes=group,
+                    detections=detections,
+                    candidate_regions=candidate_regions,
                 )
             )
 
@@ -416,7 +522,14 @@ class UltralyticsBackend(DetectorBackend):
                 for existing in kept_ebikes
             ):
                 continue
-            kept_ebikes.append(det)
+            kept_ebikes.append(
+                self._expand_ebike_detection(
+                    det,
+                    sibling_ebikes=[det],
+                    detections=detections,
+                    candidate_regions=candidate_regions,
+                )
+            )
 
         non_ebikes = [det for det in detections if det.class_id != ebike_class_id]
         return sorted(non_ebikes + kept_ebikes, key=lambda item: item.confidence, reverse=True)
@@ -692,6 +805,127 @@ class UltralyticsBackend(DetectorBackend):
         score += best_rider_support * 0.25
         score += min((detection.bbox[2] - detection.bbox[0]) * (detection.bbox[3] - detection.bbox[1]) / 60000.0, 0.15)
         return score
+
+    def _expand_ebike_detection(
+        self,
+        detection: Detection,
+        sibling_ebikes: List[Detection],
+        detections: List[Detection],
+        candidate_regions: List[Dict[str, Any]],
+    ) -> Detection:
+        merged_boxes: List[List[float]] = [detection.bbox]
+
+        for sibling in sibling_ebikes:
+            if sibling is detection:
+                continue
+            if (
+                self._iou(detection.bbox, sibling.bbox) > 0.08
+                or self._boxes_related(detection.bbox, sibling.bbox, expand_ratio=0.18)
+            ):
+                merged_boxes.append(sibling.bbox)
+
+        supporting_region = self._find_best_supporting_bike_region(
+            detection,
+            detections=detections,
+            candidate_regions=candidate_regions,
+        )
+        if supporting_region is not None:
+            merged_boxes.append(supporting_region["bbox"])
+
+        expanded_bbox = self._limit_ebike_bbox_growth(
+            detection.bbox,
+            self._merge_bboxes(merged_boxes),
+        )
+        return Detection(
+            class_id=detection.class_id,
+            confidence=detection.confidence,
+            class_name=detection.class_name,
+            bbox=expanded_bbox,
+        )
+
+    def _find_best_supporting_bike_region(
+        self,
+        detection: Detection,
+        detections: List[Detection],
+        candidate_regions: List[Dict[str, Any]],
+    ) -> Optional[Dict[str, Any]]:
+        related_people = self._collect_related_person_boxes(detection.bbox, detections, candidate_regions)
+        best_region: Optional[Dict[str, Any]] = None
+        best_score = 0.0
+        anchor_area = max(detection.area, 1.0)
+
+        for region in candidate_regions:
+            if region["class_name"] not in {"bicycle", "motorcycle"}:
+                continue
+
+            support = self._bike_region_support_score(detection.bbox, region["bbox"])
+            if support < 0.18 and not self._boxes_related(detection.bbox, region["bbox"], expand_ratio=0.10):
+                continue
+
+            region_area = max(
+                1.0,
+                (region["bbox"][2] - region["bbox"][0]) * (region["bbox"][3] - region["bbox"][1]),
+            )
+            if region_area > anchor_area * 3.0 and support < 0.45:
+                continue
+
+            if related_people and not any(
+                self._person_matches_ebike(person_bbox, region["bbox"])
+                for person_bbox in related_people
+            ):
+                continue
+
+            score = support + min(region["confidence"], 0.65) * 0.15
+            if region_area > anchor_area:
+                score += min(region_area / anchor_area, 2.0) * 0.08
+
+            if score > best_score:
+                best_score = score
+                best_region = region
+
+        return best_region
+
+    def _collect_related_person_boxes(
+        self,
+        ebike_bbox: List[float],
+        detections: List[Detection],
+        candidate_regions: List[Dict[str, Any]],
+    ) -> List[List[float]]:
+        related_boxes: List[List[float]] = []
+
+        for det in detections:
+            if det.class_id in {settings.detection.driver_class_id, settings.detection.passenger_class_id}:
+                if self._person_matches_ebike(det.bbox, ebike_bbox):
+                    related_boxes.append(det.bbox)
+
+        for region in candidate_regions:
+            if region["class_name"] == "person" and self._person_matches_ebike(region["bbox"], ebike_bbox):
+                related_boxes.append(region["bbox"])
+
+        return related_boxes
+
+    def _merge_bboxes(self, boxes: List[List[float]]) -> List[float]:
+        return [
+            min(box[0] for box in boxes),
+            min(box[1] for box in boxes),
+            max(box[2] for box in boxes),
+            max(box[3] for box in boxes),
+        ]
+
+    def _limit_ebike_bbox_growth(
+        self,
+        anchor_bbox: List[float],
+        expanded_bbox: List[float],
+    ) -> List[float]:
+        ax1, ay1, ax2, ay2 = anchor_bbox
+        anchor_w = max(1.0, ax2 - ax1)
+        anchor_h = max(1.0, ay2 - ay1)
+        return [
+            max(expanded_bbox[0], ax1 - anchor_w * 1.00),
+            max(expanded_bbox[1], ay1 - anchor_h * 0.35),
+            min(expanded_bbox[2], ax2 + anchor_w * 1.00),
+            min(expanded_bbox[3], ay2 + anchor_h * 0.55),
+        ]
 
     def _bike_region_support_score(
         self,
@@ -1087,11 +1321,58 @@ class UltralyticsBackend(DetectorBackend):
         bbox: List[float],
         regions: List[Dict[str, Any]],
     ) -> Optional[Dict[str, Any]]:
-        related = [region for region in regions if self._person_matches_ebike(region["bbox"], bbox)]
+        related = self._find_related_person_regions(bbox, regions)
         if not related:
             return None
-        related.sort(key=lambda item: item["confidence"], reverse=True)
         return related[0]
+
+    def _find_related_person_regions(
+        self,
+        bbox: List[float],
+        regions: List[Dict[str, Any]],
+    ) -> List[Dict[str, Any]]:
+        related = [region for region in regions if self._person_matches_ebike(region["bbox"], bbox)]
+        related.sort(
+            key=lambda item: (
+                self._person_ebike_overlap_score(item["bbox"], bbox),
+                item["confidence"],
+            ),
+            reverse=True,
+        )
+        return related
+
+    def _find_unmatched_person_region(
+        self,
+        regions: List[Dict[str, Any]],
+        riders: List[Detection],
+    ) -> Optional[Dict[str, Any]]:
+        for region in regions:
+            if self._region_matches_any_rider(region["bbox"], riders):
+                continue
+            return region
+        return None
+
+    def _region_matches_any_rider(
+        self,
+        region_bbox: List[float],
+        riders: List[Detection],
+    ) -> bool:
+        for rider in riders:
+            overlap = self._overlap_ratio(region_bbox, rider.bbox)
+            iou = self._iou(region_bbox, rider.bbox)
+            center_distance = self._center_distance(region_bbox, rider.bbox)
+            min_dim = max(
+                1.0,
+                min(
+                    region_bbox[2] - region_bbox[0],
+                    region_bbox[3] - region_bbox[1],
+                    rider.bbox[2] - rider.bbox[0],
+                    rider.bbox[3] - rider.bbox[1],
+                ),
+            )
+            if overlap > 0.55 or iou > 0.30 or center_distance < min_dim * 0.45:
+                return True
+        return False
 
 
     def _person_matches_ebike(

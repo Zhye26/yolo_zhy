@@ -2,20 +2,29 @@
 E-bike violation detector service.
 Facade for the detection pipeline, maintaining backward compatibility.
 """
+from contextlib import contextmanager
+from typing import Dict, Iterator, List, Optional, Tuple
+
 import cv2
 import numpy as np
-from typing import List, Dict, Tuple, Optional
-from app.core import FramePipeline, PipelineConfig, FrameResult
-from app.rendering import DetectionRenderer
+
 from app.config import settings
+from app.core import FramePipeline, FrameResult, PipelineConfig
+from app.rendering import DetectionRenderer
 
 
 class EbikeDetector:
     """E-bike violation detector with pipeline backend."""
 
-    def __init__(self, model_path: Optional[str] = None, use_tensorrt: bool = False):
+    def __init__(
+        self,
+        model_path: Optional[str] = None,
+        use_tensorrt: bool = False,
+        task_mode: str = "all",
+    ):
         self.model_path = model_path or str(settings.model.model_path)
         self.use_tensorrt = use_tensorrt
+        self.task_mode = task_mode
         self.class_names = settings.detection.class_names
 
         self._pipeline: Optional[FramePipeline] = None
@@ -25,18 +34,19 @@ class EbikeDetector:
     def load_model(self) -> bool:
         """Load detection model."""
         try:
-            config = PipelineConfig(
-                use_tensorrt=self.use_tensorrt,
-                enable_tracking=True,
-                enable_rules=True,
-                enable_dedup=True,
-            )
-            self._pipeline = FramePipeline(config)
-            self._pipeline.initialize(self.model_path)
-            self._renderer = DetectionRenderer(self._pipeline.class_names)
+            with self._task_settings():
+                config = PipelineConfig(
+                    use_tensorrt=self.use_tensorrt,
+                    enable_tracking=True,
+                    enable_rules=True,
+                    enable_dedup=True,
+                )
+                self._pipeline = FramePipeline(config)
+                self._pipeline.initialize(self.model_path)
+                self._renderer = DetectionRenderer(self._pipeline.class_names)
             return True
         except Exception as e:
-            print(f"模型加载失败: {e}")
+            print(f"妯″瀷鍔犺浇澶辫触: {e}")
             return False
 
     def detect(self, image: np.ndarray) -> "DetectionResult":
@@ -45,9 +55,11 @@ class EbikeDetector:
         Returns a wrapper for backward compatibility.
         """
         if self._pipeline is None:
-            self.load_model()
+            if not self.load_model():
+                raise RuntimeError("Failed to initialize detection pipeline.")
 
-        result = self._pipeline.process(image)
+        with self._task_settings():
+            result = self._pipeline.process(image)
         self._last_result = result
         return DetectionResult(result, self.class_names)
 
@@ -61,12 +73,15 @@ class EbikeDetector:
     def reset_tracker(self) -> None:
         """Reset tracker state for new video."""
         if self._pipeline:
-            self._pipeline.reset()
+            with self._task_settings():
+                self._pipeline.reset()
+        if self._renderer:
+            self._renderer.reset()
 
     def detect_violations(
         self,
         detections: "DetectionResult",
-        use_tracking: bool = False
+        use_tracking: bool = False,
     ) -> Tuple[List[Dict], List[Dict]]:
         """
         Get violations from detection result.
@@ -87,20 +102,20 @@ class EbikeDetector:
 
     def _violation_to_dict(self, v) -> Dict:
         """Convert ViolationEvent to legacy dict format."""
-        violation_type = 'overload' if v.violation_type == v.violation_type.PASSENGER else v.violation_type.name.lower()
+        violation_type = "overload" if v.violation_type == v.violation_type.PASSENGER else v.violation_type.name.lower()
         return {
-            'type': violation_type,
-            'bbox': v.bbox,
-            'confidence': v.confidence,
-            'track_id': v.track_id,
-            'description': v.description,
+            "type": violation_type,
+            "bbox": v.bbox,
+            "confidence": v.confidence,
+            "track_id": v.track_id,
+            "description": v.description,
         }
 
     def draw_results(
         self,
         image: np.ndarray,
         detections: "DetectionResult",
-        violations: List[Dict]
+        violations: List[Dict],
     ) -> np.ndarray:
         """Draw detection results on image."""
         if self._renderer is None:
@@ -118,6 +133,30 @@ class EbikeDetector:
         if self._pipeline:
             return self._pipeline.get_stats()
         return {}
+
+    @contextmanager
+    def _task_settings(self) -> Iterator[None]:
+        original_passenger_rule = settings.rules.passenger_rule_enabled
+        original_helmet_rule = settings.rules.helmet_rule_enabled
+        original_helmet_detection = settings.detection.helmet_detection_enabled
+        try:
+            if self.task_mode == "helmet":
+                settings.rules.passenger_rule_enabled = False
+                settings.rules.helmet_rule_enabled = True
+                settings.detection.helmet_detection_enabled = True
+            elif self.task_mode == "passenger":
+                settings.rules.passenger_rule_enabled = True
+                settings.rules.helmet_rule_enabled = False
+                settings.detection.helmet_detection_enabled = False
+            else:
+                settings.rules.passenger_rule_enabled = True
+                settings.rules.helmet_rule_enabled = True
+                settings.detection.helmet_detection_enabled = True
+            yield
+        finally:
+            settings.rules.passenger_rule_enabled = original_passenger_rule
+            settings.rules.helmet_rule_enabled = original_helmet_rule
+            settings.detection.helmet_detection_enabled = original_helmet_detection
 
 
 class DetectionResult:
@@ -173,6 +212,7 @@ class BoxItem:
     @property
     def xyxy(self):
         import torch
+
         return [torch.tensor(self._det.bbox)]
 
     @property

@@ -28,5 +28,9 @@ class ViolationRule(ABC):
         """
         pass
 
+    def reset(self) -> None:
+        """Reset any per-stream rule state."""
+        return None
+
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(id={self.rule_id}, enabled={self.enabled})"

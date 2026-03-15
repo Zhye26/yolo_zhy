@@ -65,6 +65,11 @@ class RuleEngine:
             all_candidates.extend(rule.evaluate(context))
         return all_candidates
 
+    def reset(self) -> None:
+        """Reset per-stream state in all rules."""
+        for rule in self.rules:
+            rule.reset()
+
     def get_rules_info(self) -> List[Dict]:
         """Get information about all registered rules."""
         return [
