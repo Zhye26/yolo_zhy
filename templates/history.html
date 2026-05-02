@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}历史记录 - 电动车违规检测系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-clock-history"></i> 历史检测记录</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                {% if detections %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>文件名</th>
+                            <th>类型</th>
+                            <th>违规数</th>
+                            <th>检测时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in detections %}
+                        <tr>
+                            <td>{{ d.id }}</td>
+                            <td>{{ d.filename }}</td>
+                            <td>
+                                {% if d.file_type == 'image' %}
+                                    <span class="badge bg-info"><i class="bi bi-image"></i> 图片</span>
+                                {% else %}
+                                    <span class="badge bg-success"><i class="bi bi-camera-video"></i> 视频</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-danger">{{ d.violations.count() }}</span>
+                            </td>
+                            <td>{{ d.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('detection.result', detection_id=d.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i> 查看
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted text-center py-5">
+                    <i class="bi bi-inbox display-1"></i><br>
+                    暂无检测记录<br>
+                    <a href="{{ url_for('detection.upload') }}" class="btn btn-primary mt-3">开始检测</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

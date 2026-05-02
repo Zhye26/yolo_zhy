@@ -1,0 +1,31 @@
+# Web Framework
+flask>=3.0.0
+flask-sqlalchemy>=3.1.0
+flask-migrate>=4.0.0
+pymysql>=1.1.0
+gunicorn>=21.2.0
+
+# Config
+pydantic>=2.6.0
+pydantic-settings>=2.2.1
+
+# AI/ML
+ultralytics>=8.1.0
+torch>=2.0.0
+torchvision>=0.15.0
+opencv-python>=4.8.0
+numpy>=1.24.0
+tensorrt>=10.0.0
+
+# Tracking
+boxmot>=10.0.0
+lap>=0.4.0
+filterpy>=1.4.5
+
+# Utils
+python-dotenv>=1.0.0
+pillow>=10.0.0
+tqdm>=4.66.0
+
+# Optional (YOLO+SAM3 cascade):
+# install the SAM3 package from your internal/private source so `import sam3` works.

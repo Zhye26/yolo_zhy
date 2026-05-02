@@ -1,0 +1,17 @@
+# 电动车违规检测数据集配置
+# E-bike Violation Detection Dataset
+
+path: /home/ubuntu/yolo_zhy/data
+train: images/train
+val: images/val
+test: images/test
+
+# 类别数量
+nc: 4
+
+# 类别名称
+names:
+  0: ebike
+  1: driver
+  2: passenger
+  3: helmet

@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}视频检测 - 电动车违规检测系统{% endblock %}
+
+{% block extra_css %}
+<style>
+.video-container {
+    background: #1a1a2e;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+.video-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.video-placeholder {
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6c757d;
+}
+.stat-card {
+    border-left: 4px solid;
+    transition: transform 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card.violations { border-left-color: #dc3545; }
+.stat-card.helmet { border-left-color: #ffc107; }
+.stat-card.fps { border-left-color: #0d6efd; }
+.stat-card.progress { border-left-color: #198754; }
+.stat-value { font-size: 2rem; font-weight: 600; }
+.control-btn { min-width: 100px; }
+.violation-log {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.violation-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.875rem;
+}
+.violation-item:last-child { border-bottom: none; }
+.status-badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}">首页</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('main.history') }}">历史记录</a></li>
+                <li class="breadcrumb-item active">视频检测</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <!-- 视频区域 -->
+    <div class="col-lg-8 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-camera-video"></i> {{ detection.filename }}</h5>
+                <span class="badge status-badge" id="statusBadge">等待开始</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="video-container">
+                    <div class="video-placeholder" id="placeholder">
+                        <div class="text-center">
+                            <i class="bi bi-play-circle display-1"></i>
+                            <p class="mt-2">点击"开始检测"按钮开始处理</p>
+                        </div>
+                    </div>
+                    <img id="videoStream" src="" alt="检测画面" style="display:none;">
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <button class="btn btn-success control-btn" id="btnStart">
+                            <i class="bi bi-play-fill"></i> 开始
+                        </button>
+                        <button class="btn btn-warning control-btn" id="btnPause" disabled>
+                            <i class="bi bi-pause-fill"></i> 暂停
+                        </button>
+                        <button class="btn btn-danger control-btn" id="btnStop" disabled>
+                            <i class="bi bi-stop-fill"></i> 停止
+                        </button>
+                    </div>
+                    <div class="progress flex-grow-1 mx-3" style="height: 20px;">
+                        <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统计面板 -->
+    <div class="col-lg-4">
+        <div class="row g-3">
+            <div class="col-6">
+                <div class="card stat-card violations">
+                    <div class="card-body text-center">
+                        <div class="stat-value text-danger" id="passengerCount">0</div>
+                        <small class="text-muted">载人违规</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card stat-card helmet">
+                    <div class="card-body text-center">
+                        <div class="stat-value text-warning" id="helmetCount">0</div>
+                        <small class="text-muted">未戴头盔</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card stat-card fps">
+                    <div class="card-body text-center">
+                        <div class="stat-value text-primary" id="fpsValue">0</div>
+                        <small class="text-muted">FPS</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card stat-card progress">
+                    <div class="card-body text-center">
+                        <div class="stat-value text-success" id="frameCount">0</div>
+                        <small class="text-muted">已处理帧</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-exclamation-triangle"></i> 违规记录
+            </div>
+            <div class="card-body p-0 violation-log" id="violationLog">
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-inbox"></i> 暂无违规记录
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <a href="{{ url_for('detection.result', detection_id=detection.id) }}"
+                   class="btn btn-outline-primary w-100" id="btnResult" disabled>
+                    <i class="bi bi-file-earmark-text"></i> 查看完整报告
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const detectionId = {{ detection.id }};
+const apiBase = '/api/video';
+let statsInterval = null;
+let isRunning = false;
+
+const elements = {
+    stream: document.getElementById('videoStream'),
+    placeholder: document.getElementById('placeholder'),
+    statusBadge: document.getElementById('statusBadge'),
+    progressBar: document.getElementById('progressBar'),
+    btnStart: document.getElementById('btnStart'),
+    btnPause: document.getElementById('btnPause'),
+    btnStop: document.getElementById('btnStop'),
+    btnResult: document.getElementById('btnResult'),
+    passengerCount: document.getElementById('passengerCount'),
+    helmetCount: document.getElementById('helmetCount'),
+    fpsValue: document.getElementById('fpsValue'),
+    frameCount: document.getElementById('frameCount'),
+    violationLog: document.getElementById('violationLog'),
+};
+
+function setStatus(state) {
+    const badges = {
+        'created': ['bg-secondary', '等待开始'],
+        'running': ['bg-success', '检测中'],
+        'paused': ['bg-warning text-dark', '已暂停'],
+        'stopped': ['bg-danger', '已停止'],
+        'completed': ['bg-primary', '已完成'],
+        'error': ['bg-danger', '错误'],
+    };
+    const [cls, text] = badges[state] || ['bg-secondary', state];
+    elements.statusBadge.className = 'badge status-badge ' + cls;
+    elements.statusBadge.textContent = text;
+}
+
+function updateStats(data) {
+    if (!data.stats) return;
+    elements.passengerCount.textContent = data.stats.passenger_violations;
+    elements.helmetCount.textContent = data.stats.helmet_violations;
+    elements.fpsValue.textContent = data.stats.fps;
+    elements.frameCount.textContent = data.stats.processed_frames;
+    elements.progressBar.style.width = data.progress + '%';
+    elements.progressBar.textContent = data.progress + '%';
+    setStatus(data.state);
+
+    if (data.state === 'completed' || data.state === 'stopped') {
+        stopPolling();
+        elements.btnResult.removeAttribute('disabled');
+        elements.btnStart.disabled = false;
+        elements.btnPause.disabled = true;
+        elements.btnStop.disabled = true;
+    }
+}
+
+function addViolation(type) {
+    const icon = type === 'passenger' ? 'bi-people' : 'bi-shield-x';
+    const label = type === 'passenger' ? '载人违规' : '未戴头盔';
+    const cls = type === 'passenger' ? 'text-warning' : 'text-danger';
+    const time = new Date().toLocaleTimeString();
+
+    if (elements.violationLog.querySelector('.text-muted')) {
+        elements.violationLog.innerHTML = '';
+    }
+    const item = document.createElement('div');
+    item.className = 'violation-item';
+    item.innerHTML = `<i class="bi ${icon} ${cls}"></i> <strong>${label}</strong>
+                      <span class="float-end text-muted">${time}</span>`;
+    elements.violationLog.insertBefore(item, elements.violationLog.firstChild);
+}
+
+async function createSession() {
+    const res = await fetch(`${apiBase}/session/${detectionId}`, { method: 'POST' });
+    return res.json();
+}
+
+async function fetchStats() {
+    const res = await fetch(`${apiBase}/session/${detectionId}/stats`);
+    return res.json();
+}
+
+async function controlSession(action) {
+    const res = await fetch(`${apiBase}/session/${detectionId}/control`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+    });
+    return res.json();
+}
+
+function startPolling() {
+    if (statsInterval) return;
+    let lastPassenger = 0, lastHelmet = 0;
+    statsInterval = setInterval(async () => {
+        const data = await fetchStats();
+        if (data.stats) {
+            if (data.stats.passenger_violations > lastPassenger) {
+                for (let i = lastPassenger; i < data.stats.passenger_violations; i++) {
+                    addViolation('passenger');
+                }
+                lastPassenger = data.stats.passenger_violations;
+            }
+            if (data.stats.helmet_violations > lastHelmet) {
+                for (let i = lastHelmet; i < data.stats.helmet_violations; i++) {
+                    addViolation('no_helmet');
+                }
+                lastHelmet = data.stats.helmet_violations;
+            }
+        }
+        updateStats(data);
+    }, 1000);
+}
+
+function stopPolling() {
+    if (statsInterval) {
+        clearInterval(statsInterval);
+        statsInterval = null;
+    }
+}
+
+elements.btnStart.addEventListener('click', async () => {
+    await createSession();
+    elements.placeholder.style.display = 'none';
+    elements.stream.style.display = 'block';
+    elements.stream.src = `${apiBase}/stream/${detectionId}?t=${Date.now()}`;
+    elements.btnStart.disabled = true;
+    elements.btnPause.disabled = false;
+    elements.btnStop.disabled = false;
+    isRunning = true;
+    startPolling();
+});
+
+elements.btnPause.addEventListener('click', async () => {
+    if (elements.btnPause.textContent.includes('暂停')) {
+        await controlSession('pause');
+        elements.btnPause.innerHTML = '<i class="bi bi-play-fill"></i> 继续';
+    } else {
+        await controlSession('resume');
+        elements.btnPause.innerHTML = '<i class="bi bi-pause-fill"></i> 暂停';
+    }
+});
+
+elements.btnStop.addEventListener('click', async () => {
+    await controlSession('stop');
+    elements.stream.src = '';
+    elements.stream.style.display = 'none';
+    elements.placeholder.style.display = 'flex';
+    elements.btnStart.disabled = false;
+    elements.btnPause.disabled = true;
+    elements.btnStop.disabled = true;
+    stopPolling();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}统计分析 - 电动车违规检测系统{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-bar-chart"></i> 统计分析</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>违规类型分布</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>近7天违规趋势</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="lineChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>近30天违规统计</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 获取统计数据
+fetch('/api/stats')
+    .then(response => response.json())
+    .then(stats => {
+        // 饼图
+        new Chart(document.getElementById('pieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['载人违规', '头盔违规'],
+                datasets: [{
+                    data: [stats.passenger_violations, stats.helmet_violations],
+                    backgroundColor: ['#ffc107', '#dc3545']
+                }]
+            }
+        });
+    });
+
+// 趋势图
+fetch('/api/chart/daily?days=7')
+    .then(response => response.json())
+    .then(data => {
+        const labels = Object.keys(data).sort();
+        const passengerData = labels.map(d => data[d]?.passenger || 0);
+        const helmetData = labels.map(d => data[d]?.no_helmet || 0);
+
+        new Chart(document.getElementById('lineChart'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '载人违规',
+                        data: passengerData,
+                        borderColor: '#ffc107',
+                        fill: false
+                    },
+                    {
+                        label: '头盔违规',
+                        data: helmetData,
+                        borderColor: '#dc3545',
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    });
+
+// 30天柱状图
+fetch('/api/chart/daily?days=30')
+    .then(response => response.json())
+    .then(data => {
+        const labels = Object.keys(data).sort();
+        const totalData = labels.map(d => (data[d]?.passenger || 0) + (data[d]?.no_helmet || 0));
+
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '违规总数',
+                    data: totalData,
+                    backgroundColor: '#0d6efd'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    });
+</script>
+{% endblock %}
