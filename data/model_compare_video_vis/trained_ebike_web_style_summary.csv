@@ -1,0 +1,7 @@
+model,model_path,report_conf,processed_frames,frames_with_detection,frame_hit_rate,detections,avg_confidence,avg_elapsed_ms,avg_fps
+baseline,models/baseline_best.pt,0.050,1817,157,0.0864,168,0.0862,23.997,41.672
+baseline,models/baseline_best.pt,0.250,1817,1,0.0006,1,0.3512,23.997,41.672
+baseline,models/baseline_best.pt,0.500,1817,0,0.0000,0,0.0000,23.997,41.672
+bifpn,models/bifpn_best.pt,0.050,1817,72,0.0396,72,0.1518,23.845,41.938
+bifpn,models/bifpn_best.pt,0.250,1817,8,0.0044,8,0.3576,23.845,41.938
+bifpn,models/bifpn_best.pt,0.500,1817,1,0.0006,1,0.5646,23.845,41.938

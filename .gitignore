@@ -62,3 +62,4 @@ package-lock.json
 
 # Large artifacts
 data/model_compare_video_vis/*.mp4
+data/model_compare_video_vis/yolov8n-overload-gui-ljt/*.mp4
