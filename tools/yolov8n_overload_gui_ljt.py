@@ -36,20 +36,15 @@ from PIL import Image, ImageTk
 from ultralytics import YOLO
 
 from yolov8n_overload_video_ljt import (
-    BICYCLE_CLASS_ID,
     MOTORCYCLE_CLASS_ID,
     PERSON_CLASS_ID,
-    TARGET_CLASSES,
     FrameVehicleResult,
-    VehicleTracker,
+    create_vehicle_tracker,
     draw_frame,
     match_people_to_vehicles,
     result_to_detections,
     sync_cuda_if_available,
 )
-
-
-DEFAULT_OUTPUT_DIR = Path("data/model_compare_video_vis/yolov8n-overload-gui-ljt")
 
 
 class Yolov8nOverloadGuiLjt:
@@ -67,14 +62,22 @@ class Yolov8nOverloadGuiLjt:
         self.current_photo = None
 
         self.model_path = StringVar(value="yolov8n.pt")
-        self.output_dir = StringVar(value=str(DEFAULT_OUTPUT_DIR))
+        self.detect_classes = StringVar(value="0,3")
         self.conf = DoubleVar(value=0.25)
         self.iou = DoubleVar(value=0.45)
         self.imgsz = IntVar(value=640)
         self.match_thresh = DoubleVar(value=1.05)
         self.confirm_frames = IntVar(value=2)
+        self.tracker = StringVar(value="association")
         self.track_iou = DoubleVar(value=0.18)
         self.max_missed = IntVar(value=6)
+        self.byte_track_thresh = DoubleVar(value=0.25)
+        self.byte_match_thresh = DoubleVar(value=0.8)
+        self.byte_track_buffer = IntVar(value=30)
+        self.association_min_hits = IntVar(value=4)
+        self.association_lock_frames = IntVar(value=20)
+        self.association_unbind_frames = IntVar(value=15)
+        self.association_switch_margin = DoubleVar(value=0.35)
         self.min_area = DoubleVar(value=20.0)
         self.frame_stride = IntVar(value=1)
         self.save_video = BooleanVar(value=False)
@@ -92,31 +95,45 @@ class Yolov8nOverloadGuiLjt:
         right = Frame(self.root, padx=10, pady=10)
         right.pack(side="right", fill="both", expand=True)
 
-        Button(left, text="Add Videos", command=self.add_videos, width=18).pack(pady=4)
-        Button(left, text="Clear List", command=self.clear_videos, width=18).pack(pady=4)
+        file_actions = Frame(left)
+        file_actions.pack(fill="x", pady=(0, 4))
+        Button(file_actions, text="Add Videos", command=self.add_videos, width=18).pack(side="left", padx=(0, 6))
+        Button(file_actions, text="Clear List", command=self.clear_videos, width=18).pack(side="left")
 
-        self.video_list = Listbox(left, width=46, height=12)
+        run_actions = Frame(left)
+        run_actions.pack(fill="x", pady=(2, 6))
+        Button(run_actions, text="Start", command=self.start, width=12).pack(side="left", padx=(0, 5))
+        Button(run_actions, text="Pause / Resume", command=self.toggle_pause, width=16).pack(side="left", padx=(0, 5))
+        Button(run_actions, text="Stop", command=self.stop, width=10).pack(side="left")
+
+        Label(left, textvariable=self.status_text, wraplength=360, justify="left").pack(
+            fill="x", pady=(0, 8), anchor="w"
+        )
+
+        self.video_list = Listbox(left, width=46, height=8)
         self.video_list.pack(pady=8)
 
         self._labeled_entry(left, "Model", self.model_path)
-        self._labeled_entry(left, "Output Dir", self.output_dir)
+        self._labeled_entry(left, "detect_classes", self.detect_classes)
         self._labeled_entry(left, "conf", self.conf)
         self._labeled_entry(left, "iou", self.iou)
         self._labeled_entry(left, "imgsz", self.imgsz)
         self._labeled_entry(left, "match_thresh", self.match_thresh)
         self._labeled_entry(left, "confirm_frames", self.confirm_frames)
+        self._labeled_entry(left, "tracker", self.tracker)
         self._labeled_entry(left, "track_iou", self.track_iou)
         self._labeled_entry(left, "max_missed", self.max_missed)
+        self._labeled_entry(left, "byte_track_thresh", self.byte_track_thresh)
+        self._labeled_entry(left, "byte_match_thresh", self.byte_match_thresh)
+        self._labeled_entry(left, "byte_track_buffer", self.byte_track_buffer)
+        self._labeled_entry(left, "assoc_min_hits", self.association_min_hits)
+        self._labeled_entry(left, "assoc_lock", self.association_lock_frames)
+        self._labeled_entry(left, "assoc_unbind", self.association_unbind_frames)
+        self._labeled_entry(left, "assoc_switch", self.association_switch_margin)
         self._labeled_entry(left, "min_area", self.min_area)
         self._labeled_entry(left, "frame_stride", self.frame_stride)
 
         Checkbutton(left, text="Save annotated videos", variable=self.save_video).pack(anchor="w", pady=6)
-
-        Button(left, text="Start", command=self.start, width=18).pack(pady=6)
-        Button(left, text="Pause / Resume", command=self.toggle_pause, width=18).pack(pady=4)
-        Button(left, text="Stop", command=self.stop, width=18).pack(pady=4)
-
-        Label(left, textvariable=self.status_text, wraplength=340, justify="left").pack(pady=10, anchor="w")
 
         self.video_label = Label(right, bg="black")
         self.video_label.pack(fill="both", expand=True)
@@ -182,20 +199,30 @@ class Yolov8nOverloadGuiLjt:
             self.model = YOLO(self.model_path.get())
         return self.model
 
+    def _parse_detect_classes(self) -> List[int]:
+        raw = self.detect_classes.get().strip()
+        if not raw:
+            return [PERSON_CLASS_ID, MOTORCYCLE_CLASS_ID]
+        class_ids: List[int] = []
+        for item in raw.split(","):
+            item = item.strip()
+            if not item:
+                continue
+            class_ids.append(int(item))
+        return class_ids or [PERSON_CLASS_ID, MOTORCYCLE_CLASS_ID]
+
     def _run_worker(self) -> None:
         try:
-            output_dir = Path(self.output_dir.get())
-            output_dir.mkdir(parents=True, exist_ok=True)
             model = self._load_model()
             for index, video_path in enumerate(self.video_paths, start=1):
                 if self.stop_event.is_set():
                     break
-                self._process_video(model, video_path, output_dir, index, len(self.video_paths))
+                self._process_video(model, video_path, index, len(self.video_paths))
             self._put_ui({"type": "status", "text": "Done" if not self.stop_event.is_set() else "Stopped"})
         except Exception as exc:
             self._put_ui({"type": "error", "text": str(exc)})
 
-    def _process_video(self, model: YOLO, video_path: Path, output_dir: Path, video_index: int, video_total: int) -> None:
+    def _process_video(self, model: YOLO, video_path: Path, video_index: int, video_total: int) -> None:
         cap = cv2.VideoCapture(str(video_path))
         if not cap.isOpened():
             self._put_ui({"type": "status", "text": f"Failed to open: {video_path}"})
@@ -205,7 +232,9 @@ class Yolov8nOverloadGuiLjt:
         frame_w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        detect_classes = self._parse_detect_classes()
 
+        output_dir = video_path.parent
         stem = f"{video_path.stem}-yolov8n-overload-ljt"
         frame_csv_path = output_dir / f"{stem}_frames.csv"
         summary_csv_path = output_dir / f"{stem}_summary.csv"
@@ -223,7 +252,7 @@ class Yolov8nOverloadGuiLjt:
         if ok:
             model.predict(
                 first_frame,
-                classes=TARGET_CLASSES,
+                classes=detect_classes,
                 conf=self.conf.get(),
                 iou=self.iou.get(),
                 imgsz=self.imgsz.get(),
@@ -232,11 +261,24 @@ class Yolov8nOverloadGuiLjt:
             sync_cuda_if_available()
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
-        tracker = VehicleTracker(
-            iou_thresh=self.track_iou.get(),
-            max_missed=self.max_missed.get(),
-            confirm_frames=self.confirm_frames.get(),
-        )
+        tracker_args = type(
+            "TrackerArgs",
+            (),
+            {
+                "tracker": self.tracker.get(),
+                "byte_track_thresh": self.byte_track_thresh.get(),
+                "byte_match_thresh": self.byte_match_thresh.get(),
+                "byte_track_buffer": self.byte_track_buffer.get(),
+                "confirm_frames": self.confirm_frames.get(),
+                "max_missed": self.max_missed.get(),
+                "track_iou": self.track_iou.get(),
+                "association_min_hits": self.association_min_hits.get(),
+                "association_lock_frames": self.association_lock_frames.get(),
+                "association_unbind_frames": self.association_unbind_frames.get(),
+                "association_switch_margin": self.association_switch_margin.get(),
+            },
+        )()
+        tracker, tracker_name = create_vehicle_tracker(tracker_args)
 
         rows: List[Dict[str, object]] = []
         timing_ms: List[float] = []
@@ -264,7 +306,7 @@ class Yolov8nOverloadGuiLjt:
             start = time.perf_counter()
             result = model.predict(
                 frame,
-                classes=TARGET_CLASSES,
+                classes=detect_classes,
                 conf=self.conf.get(),
                 iou=self.iou.get(),
                 imgsz=self.imgsz.get(),
@@ -276,13 +318,24 @@ class Yolov8nOverloadGuiLjt:
 
             detections = result_to_detections(result, min_area=self.min_area.get())
             people = [det for det in detections if det.class_id == PERSON_CLASS_ID]
-            vehicles = [det for det in detections if det.class_id in {BICYCLE_CLASS_ID, MOTORCYCLE_CLASS_ID}]
+            vehicles = [det for det in detections if det.class_id == MOTORCYCLE_CLASS_ID]
             total_people += len(people)
             total_vehicles += len(vehicles)
 
-            grouped_people, match_scores = match_people_to_vehicles(people, vehicles, self.match_thresh.get())
-            rider_counts = {idx: len(grouped_people[idx]) for idx in range(len(vehicles))}
-            track_matches = tracker.update(vehicles, rider_counts)
+            if tracker_name == "association":
+                track_matches, grouped_people, match_scores = tracker.update_scene(
+                    people,
+                    vehicles,
+                    frame,
+                    self.match_thresh.get(),
+                )
+            else:
+                grouped_people, match_scores = match_people_to_vehicles(people, vehicles, self.match_thresh.get())
+                rider_counts = {idx: len(grouped_people[idx]) for idx in range(len(vehicles))}
+                if tracker_name == "byte":
+                    track_matches = tracker.update(vehicles, rider_counts, frame)
+                else:
+                    track_matches = tracker.update(vehicles, rider_counts)
 
             frame_results: List[FrameVehicleResult] = []
             has_raw = False
@@ -313,6 +366,7 @@ class Yolov8nOverloadGuiLjt:
                         "vehicle_class": vehicle.class_name,
                         "vehicle_conf": f"{vehicle.confidence:.3f}",
                         "vehicle_bbox": " ".join(f"{v:.1f}" for v in vehicle.bbox),
+                        "matched_person_ids": " ".join(getattr(person, "stable_id", "") for person in matched_people),
                         "matched_person_count": len(matched_people),
                         "match_scores": " ".join(f"{score:.3f}" for score in match_scores[vehicle_idx]),
                         "raw_overload": int(raw_overload),
@@ -343,7 +397,7 @@ class Yolov8nOverloadGuiLjt:
                     "status": f"Video {video_index}/{video_total}: {video_path.name}",
                     "stats": (
                         f"processed={processed}/{total_frames}  wall_fps={wall_fps:.1f}  "
-                        f"infer_fps={inst_fps:.1f}  people={total_people}  two_wheelers={total_vehicles}  "
+                        f"infer_fps={inst_fps:.1f}  tracker={tracker_name}  people={total_people}  two_wheelers={total_vehicles}  "
                         f"raw_frames={frames_with_raw}  confirmed_frames={frames_with_confirmed}  "
                         f"confirmed_tracks={len(tracker.confirmed_track_ids)}"
                     ),
@@ -369,6 +423,8 @@ class Yolov8nOverloadGuiLjt:
             confirmed_tracks=len(tracker.confirmed_track_ids),
             avg_ms=avg_ms,
             saved_video=str(video_out_path) if writer is not None else "",
+            tracker_name=tracker_name,
+            detect_classes=detect_classes,
         )
         self._put_ui({"type": "status", "text": f"Saved CSV: {summary_csv_path}"})
 
@@ -382,6 +438,7 @@ class Yolov8nOverloadGuiLjt:
                 "vehicle_class",
                 "vehicle_conf",
                 "vehicle_bbox",
+                "matched_person_ids",
                 "matched_person_count",
                 "match_scores",
                 "raw_overload",
@@ -407,11 +464,15 @@ class Yolov8nOverloadGuiLjt:
         confirmed_tracks: int,
         avg_ms: float,
         saved_video: str,
+        tracker_name: str,
+        detect_classes: List[int],
     ) -> None:
         with path.open("w", newline="", encoding="utf-8") as f:
             fieldnames = [
                 "video",
                 "model",
+                "detect_classes",
+                "tracker",
                 "processed_frames",
                 "source_frames",
                 "source_fps",
@@ -434,6 +495,8 @@ class Yolov8nOverloadGuiLjt:
                 {
                     "video": str(video_path),
                     "model": self.model_path.get(),
+                    "detect_classes": ",".join(str(item) for item in detect_classes),
+                    "tracker": tracker_name,
                     "processed_frames": processed,
                     "source_frames": total_frames,
                     "source_fps": f"{source_fps:.3f}",
