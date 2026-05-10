@@ -1,0 +1,2 @@
+video,model,detect_classes,tracker,processed_frames,source_frames,source_fps,imgsz,conf,match_thresh,confirm_frames,total_people_detections,total_two_wheeler_detections,frames_with_raw_overload,frames_with_confirmed_overload,confirmed_overload_tracks,avg_elapsed_ms,avg_fps,saved_video
+/Users/peter/Desktop/视频/原/3.mp4,yolov8n.pt,"0,3",iou,1434,1434,30.000,640,0.25,1.05,2,1633,1068,39,35,5,35.787,27.943,

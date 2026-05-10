@@ -1,0 +1,16 @@
+name: yolov8n-overload-gui-ljt
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - pillow
+  - pytorch
+  - pip:
+      - ultralytics
+      - opencv-python
+      - boxmot
+      - lap
+      - filterpy

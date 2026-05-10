@@ -1,0 +1,8 @@
+ultralytics
+opencv-python
+pillow
+numpy
+torch
+boxmot
+lap
+filterpy
