@@ -81,6 +81,8 @@ class Yolov8nOverloadGuiLjt:
         self.hold_stationary_min_frames = IntVar(value=15)
         self.hold_move_thresh = DoubleVar(value=8.0)
         self.hold_move_norm_thresh = DoubleVar(value=0.05)
+        self.hold_stationary_iou = DoubleVar(value=0.55)
+        self.hold_stationary_size_ratio = DoubleVar(value=0.65)
         self.hold_frames = IntVar(value=90)
         self.hold_edge_margin = DoubleVar(value=40.0)
         self.hold_recover_iou = DoubleVar(value=0.18)
@@ -141,6 +143,8 @@ class Yolov8nOverloadGuiLjt:
         self._labeled_entry(left, "hold_min_frames", self.hold_stationary_min_frames)
         self._labeled_entry(left, "hold_move_px", self.hold_move_thresh)
         self._labeled_entry(left, "hold_move_norm", self.hold_move_norm_thresh)
+        self._labeled_entry(left, "hold_stat_iou", self.hold_stationary_iou)
+        self._labeled_entry(left, "hold_stat_size", self.hold_stationary_size_ratio)
         self._labeled_entry(left, "hold_frames", self.hold_frames)
         self._labeled_entry(left, "hold_edge", self.hold_edge_margin)
         self._labeled_entry(left, "hold_recover_iou", self.hold_recover_iou)
@@ -295,6 +299,8 @@ class Yolov8nOverloadGuiLjt:
                 "hold_stationary_min_frames": self.hold_stationary_min_frames.get(),
                 "hold_move_thresh": self.hold_move_thresh.get(),
                 "hold_move_norm_thresh": self.hold_move_norm_thresh.get(),
+                "hold_stationary_iou": self.hold_stationary_iou.get(),
+                "hold_stationary_size_ratio": self.hold_stationary_size_ratio.get(),
                 "hold_frames": self.hold_frames.get(),
                 "hold_edge_margin": self.hold_edge_margin.get(),
                 "hold_recover_iou": self.hold_recover_iou.get(),
@@ -514,6 +520,8 @@ class Yolov8nOverloadGuiLjt:
                 "match_thresh",
                 "confirm_frames",
                 "hold_stationary_min_frames",
+                "hold_stationary_iou",
+                "hold_stationary_size_ratio",
                 "hold_frames",
                 "hold_recover_iou",
                 "hold_recover_center_dist",
@@ -542,6 +550,8 @@ class Yolov8nOverloadGuiLjt:
                     "match_thresh": self.match_thresh.get(),
                     "confirm_frames": self.confirm_frames.get(),
                     "hold_stationary_min_frames": self.hold_stationary_min_frames.get(),
+                    "hold_stationary_iou": self.hold_stationary_iou.get(),
+                    "hold_stationary_size_ratio": self.hold_stationary_size_ratio.get(),
                     "hold_frames": self.hold_frames.get(),
                     "hold_recover_iou": self.hold_recover_iou.get(),
                     "hold_recover_center_dist": self.hold_recover_center_dist.get(),

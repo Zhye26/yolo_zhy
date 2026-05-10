@@ -412,6 +412,8 @@ class AssociationByteTracker:
         hold_stationary_min_frames: int,
         hold_move_thresh: float,
         hold_move_norm_thresh: float,
+        hold_stationary_iou: float,
+        hold_stationary_size_ratio: float,
         hold_frames: int,
         hold_edge_margin: float,
         hold_recover_iou: float,
@@ -444,6 +446,8 @@ class AssociationByteTracker:
         self.hold_stationary_min_frames = hold_stationary_min_frames
         self.hold_move_thresh = hold_move_thresh
         self.hold_move_norm_thresh = hold_move_norm_thresh
+        self.hold_stationary_iou = hold_stationary_iou
+        self.hold_stationary_size_ratio = hold_stationary_size_ratio
         self.hold_frames = hold_frames
         self.hold_edge_margin = hold_edge_margin
         self.hold_recover_iou = hold_recover_iou
@@ -550,7 +554,8 @@ class AssociationByteTracker:
     def _stable_id_for(self, kind: str, raw_track_id: int, det: Detection, frame_shape=None) -> str:
         mapped = self.raw_to_stable[kind].get(raw_track_id)
         if mapped:
-            if kind == "vehicle" and self.stable_objects.get(mapped, {}).get("state") == "expired":
+            mapped_state = self.stable_objects.get(mapped, {}).get("state")
+            if kind == "vehicle" and mapped_state in {"expired", "edge_lost"}:
                 self.raw_to_stable[kind].pop(raw_track_id, None)
             else:
                 self._touch_stable(mapped, det)
@@ -560,7 +565,7 @@ class AssociationByteTracker:
         candidate_id = self._find_hold_recovery_id(kind, det, frame_shape)
         if candidate_id is not None:
             self.last_recovered_from_hold[candidate_id] = self.frame_index
-        if candidate_id is None:
+        if candidate_id is None and kind != "vehicle":
             candidate_id = self._find_reusable_stable_id(kind, det)
         if candidate_id is None:
             if kind == "person":
@@ -586,7 +591,10 @@ class AssociationByteTracker:
             move = (velocity[0] ** 2 + velocity[1] ** 2) ** 0.5
             diag = self._box_diag(det.bbox)
             norm_move = move / max(diag, 1.0)
-            if move <= self.hold_move_thresh or norm_move <= self.hold_move_norm_thresh:
+            bbox_iou = iou(prev["bbox"], det.bbox)
+            size_similarity = self._size_similarity(prev["bbox"], det.bbox)
+            bbox_stable = bbox_iou >= self.hold_stationary_iou and size_similarity >= self.hold_stationary_size_ratio
+            if move <= self.hold_move_thresh and norm_move <= self.hold_move_norm_thresh and bbox_stable:
                 stationary_frames = int(prev.get("stationary_frames", 0)) + 1
             else:
                 stationary_frames = 0
@@ -609,7 +617,7 @@ class AssociationByteTracker:
         for stable_id, state in self.stable_objects.items():
             if state["kind"] != kind:
                 continue
-            if state.get("state") == "expired":
+            if state.get("state") in {"expired", "edge_lost", "held_lost"}:
                 continue
             missed = self.frame_index - int(state["last_seen"])
             if missed > self.max_missed + self.association_unbind_frames:
@@ -662,9 +670,13 @@ class AssociationByteTracker:
             missed = self.frame_index - int(state["last_seen"])
             if missed <= 0:
                 continue
+            if self._near_frame_edge(state["bbox"], frame_shape):
+                state["state"] = "edge_lost"
+                if missed > self.max_missed:
+                    state["state"] = "expired"
+                continue
             if (
                 int(state.get("stationary_frames", 0)) >= self.hold_stationary_min_frames
-                and not self._near_frame_edge(state["bbox"], frame_shape)
             ):
                 state["state"] = "held_lost"
                 state["held_until"] = self.frame_index + self.hold_frames
@@ -856,6 +868,8 @@ def create_vehicle_tracker(args):
             hold_stationary_min_frames=args.hold_stationary_min_frames,
             hold_move_thresh=args.hold_move_thresh,
             hold_move_norm_thresh=args.hold_move_norm_thresh,
+            hold_stationary_iou=args.hold_stationary_iou,
+            hold_stationary_size_ratio=args.hold_stationary_size_ratio,
             hold_frames=args.hold_frames,
             hold_edge_margin=args.hold_edge_margin,
             hold_recover_iou=args.hold_recover_iou,
@@ -998,6 +1012,8 @@ def main():
     parser.add_argument("--hold-stationary-min-frames", type=int, default=15)
     parser.add_argument("--hold-move-thresh", type=float, default=8.0)
     parser.add_argument("--hold-move-norm-thresh", type=float, default=0.05)
+    parser.add_argument("--hold-stationary-iou", type=float, default=0.55)
+    parser.add_argument("--hold-stationary-size-ratio", type=float, default=0.65)
     parser.add_argument("--hold-frames", type=int, default=90)
     parser.add_argument("--hold-edge-margin", type=float, default=40.0)
     parser.add_argument("--hold-recover-iou", type=float, default=0.18)
@@ -1205,6 +1221,8 @@ def main():
                 "match_thresh",
                 "confirm_frames",
                 "hold_stationary_min_frames",
+                "hold_stationary_iou",
+                "hold_stationary_size_ratio",
                 "hold_frames",
                 "hold_recover_iou",
                 "hold_recover_center_dist",
@@ -1231,6 +1249,8 @@ def main():
                 "match_thresh": args.match_thresh,
                 "confirm_frames": args.confirm_frames,
                 "hold_stationary_min_frames": args.hold_stationary_min_frames,
+                "hold_stationary_iou": args.hold_stationary_iou,
+                "hold_stationary_size_ratio": args.hold_stationary_size_ratio,
                 "hold_frames": args.hold_frames,
                 "hold_recover_iou": args.hold_recover_iou,
                 "hold_recover_center_dist": args.hold_recover_center_dist,
