@@ -125,6 +125,9 @@ class RuleSettings(BaseSettings):
     helmet_rule_enabled: bool = Field(default=False)
     helmet_head_ratio: float = Field(default=0.35)
     helmet_overlap_threshold: float = Field(default=0.3)
+    match_classifier_enabled: bool = Field(default=False)
+    match_classifier_path: Path = Field(default=BASE_DIR / "models" / "person_vehicle_match.joblib")
+    match_classifier_threshold: float = Field(default=0.55, ge=0.0, le=1.0)
 
 
 class ViolationSettings(BaseSettings):

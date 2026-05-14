@@ -3,8 +3,8 @@
 Standalone Tkinter GUI for real-time yolov8n-only overload validation.
 
 This GUI intentionally does not use the original Flask web app, database,
-pipeline, or trained model code. It reuses only the MVP logic from
-tools/yolov8n_overload_video_ljt.py.
+pipeline, or trained model code. It reuses only this method package's
+pipeline_ljt.py.
 """
 
 from __future__ import annotations
@@ -24,6 +24,7 @@ from tkinter import (
     IntVar,
     Label,
     Listbox,
+    OptionMenu,
     StringVar,
     Tk,
     filedialog,
@@ -35,7 +36,9 @@ import cv2
 from PIL import Image, ImageTk
 from ultralytics import YOLO
 
-from yolov8n_overload_video_ljt import (
+from methods.mot_trackers_ljt import AVAILABLE_TRACKERS
+
+from .pipeline_ljt import (
     MOTORCYCLE_CLASS_ID,
     PERSON_CLASS_ID,
     FrameVehicleResult,
@@ -50,7 +53,7 @@ from yolov8n_overload_video_ljt import (
 class Yolov8nOverloadGuiLjt:
     def __init__(self, root: Tk):
         self.root = root
-        self.root.title("YOLOv8n Overload MVP - ljt")
+        self.root.title("YOLOv8n Overload MVP Hold - ljt")
         self.root.geometry("1180x820")
 
         self.video_paths: List[Path] = []
@@ -61,19 +64,26 @@ class Yolov8nOverloadGuiLjt:
         self.model = None
         self.current_photo = None
 
-        self.model_path = StringVar(value="yolov8n.pt")
+        default_model = Path(__file__).resolve().parents[2] / "weights" / "yolov8n.pt"
+        self.model_path = StringVar(value=str(default_model))
         self.detect_classes = StringVar(value="0,3")
         self.conf = DoubleVar(value=0.25)
         self.iou = DoubleVar(value=0.45)
         self.imgsz = IntVar(value=640)
         self.match_thresh = DoubleVar(value=1.05)
         self.confirm_frames = IntVar(value=2)
-        self.tracker = StringVar(value="auto")
+        self.tracker = StringVar(value="association")
         self.track_iou = DoubleVar(value=0.18)
         self.max_missed = IntVar(value=6)
         self.byte_track_thresh = DoubleVar(value=0.25)
         self.byte_match_thresh = DoubleVar(value=0.8)
         self.byte_track_buffer = IntVar(value=30)
+        self.mot_min_hits = IntVar(value=3)
+        self.reid_weights = StringVar(
+            value=str(Path(__file__).resolve().parents[2] / "weights" / "osnet_x0_25_msmt17.pt")
+        )
+        self.reid_device = StringVar(value="cpu")
+        self.reid_fp16 = BooleanVar(value=False)
         self.association_min_hits = IntVar(value=4)
         self.association_lock_frames = IntVar(value=20)
         self.association_unbind_frames = IntVar(value=15)
@@ -120,12 +130,15 @@ class Yolov8nOverloadGuiLjt:
         self._labeled_entry(left, "imgsz", self.imgsz)
         self._labeled_entry(left, "match_thresh", self.match_thresh)
         self._labeled_entry(left, "confirm_frames", self.confirm_frames)
-        self._labeled_entry(left, "tracker", self.tracker)
+        self._labeled_option(left, "tracker", self.tracker, ["association", "iou", "auto", *sorted(AVAILABLE_TRACKERS)])
         self._labeled_entry(left, "track_iou", self.track_iou)
         self._labeled_entry(left, "max_missed", self.max_missed)
         self._labeled_entry(left, "byte_track_thresh", self.byte_track_thresh)
         self._labeled_entry(left, "byte_match_thresh", self.byte_match_thresh)
         self._labeled_entry(left, "byte_track_buffer", self.byte_track_buffer)
+        self._labeled_entry(left, "mot_min_hits", self.mot_min_hits)
+        self._labeled_entry(left, "reid_weights", self.reid_weights)
+        self._labeled_entry(left, "reid_device", self.reid_device)
         self._labeled_entry(left, "assoc_min_hits", self.association_min_hits)
         self._labeled_entry(left, "assoc_lock", self.association_lock_frames)
         self._labeled_entry(left, "assoc_unbind", self.association_unbind_frames)
@@ -133,6 +146,7 @@ class Yolov8nOverloadGuiLjt:
         self._labeled_entry(left, "min_area", self.min_area)
         self._labeled_entry(left, "frame_stride", self.frame_stride)
 
+        Checkbutton(left, text="ReID fp16", variable=self.reid_fp16).pack(anchor="w", pady=(4, 0))
         Checkbutton(left, text="Save annotated videos", variable=self.save_video).pack(anchor="w", pady=6)
 
         self.video_label = Label(right, bg="black")
@@ -145,6 +159,14 @@ class Yolov8nOverloadGuiLjt:
         row.pack(fill="x", pady=2)
         Label(row, text=label, width=14, anchor="w").pack(side="left")
         Entry(row, textvariable=variable, width=24).pack(side="right")
+
+    def _labeled_option(self, parent: Frame, label: str, variable, options: List[str]) -> None:
+        row = Frame(parent)
+        row.pack(fill="x", pady=2)
+        Label(row, text=label, width=14, anchor="w").pack(side="left")
+        menu = OptionMenu(row, variable, *options)
+        menu.configure(width=20)
+        menu.pack(side="right")
 
     def add_videos(self) -> None:
         paths = filedialog.askopenfilenames(
@@ -235,7 +257,8 @@ class Yolov8nOverloadGuiLjt:
         detect_classes = self._parse_detect_classes()
 
         output_dir = video_path.parent
-        stem = f"{video_path.stem}-yolov8n-overload-ljt"
+        tracker_slug = self.tracker.get().strip().lower().replace(" ", "_")
+        stem = f"{video_path.stem}-yolov8n-overload-{tracker_slug}-ljt"
         frame_csv_path = output_dir / f"{stem}_frames.csv"
         summary_csv_path = output_dir / f"{stem}_summary.csv"
         video_out_path = output_dir / f"{stem}.mp4"
@@ -269,6 +292,10 @@ class Yolov8nOverloadGuiLjt:
                 "byte_track_thresh": self.byte_track_thresh.get(),
                 "byte_match_thresh": self.byte_match_thresh.get(),
                 "byte_track_buffer": self.byte_track_buffer.get(),
+                "mot_min_hits": self.mot_min_hits.get(),
+                "reid_weights": self.reid_weights.get(),
+                "reid_device": self.reid_device.get(),
+                "reid_fp16": self.reid_fp16.get(),
                 "confirm_frames": self.confirm_frames.get(),
                 "max_missed": self.max_missed.get(),
                 "track_iou": self.track_iou.get(),
@@ -332,7 +359,7 @@ class Yolov8nOverloadGuiLjt:
             else:
                 grouped_people, match_scores = match_people_to_vehicles(people, vehicles, self.match_thresh.get())
                 rider_counts = {idx: len(grouped_people[idx]) for idx in range(len(vehicles))}
-                if tracker_name == "byte":
+                if tracker_name in AVAILABLE_TRACKERS:
                     track_matches = tracker.update(vehicles, rider_counts, frame)
                 else:
                     track_matches = tracker.update(vehicles, rider_counts)
@@ -480,6 +507,10 @@ class Yolov8nOverloadGuiLjt:
                 "conf",
                 "match_thresh",
                 "confirm_frames",
+                "mot_min_hits",
+                "reid_weights",
+                "reid_device",
+                "reid_fp16",
                 "total_people_detections",
                 "total_two_wheeler_detections",
                 "frames_with_raw_overload",
@@ -504,7 +535,11 @@ class Yolov8nOverloadGuiLjt:
                     "conf": self.conf.get(),
                     "match_thresh": self.match_thresh.get(),
                     "confirm_frames": self.confirm_frames.get(),
-                    "total_people_detections": total_people,
+                    "mot_min_hits": self.mot_min_hits.get(),
+                    "reid_weights": self.reid_weights.get(),
+                    "reid_device": self.reid_device.get(),
+                    "reid_fp16": int(self.reid_fp16.get()),
+                                            "total_people_detections": total_people,
                     "total_two_wheeler_detections": total_vehicles,
                     "frames_with_raw_overload": frames_with_raw,
                     "frames_with_confirmed_overload": frames_with_confirmed,

@@ -19,6 +19,7 @@ def allowed_file(filename):
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload():
     """上传文件页面"""
+    # Author: You Pinzhen - upload workflow connecting user files to detection records.
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('没有选择文件')
@@ -51,6 +52,7 @@ def upload():
 @bp.route('/process/<int:detection_id>')
 def process(detection_id):
     """处理检测"""
+    # Author: You Pinzhen - processing route bridging uploaded records and AI inference flow.
     detection = Detection.query.get_or_404(detection_id)
     filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], detection.filename)
 
