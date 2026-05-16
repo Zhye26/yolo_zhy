@@ -7,13 +7,24 @@ cd /Users/lujintao/Library/CloudStorage/OneDrive-AUTUniversity/MyProject-OneDriv
 conda activate xunienv
 ```
 
-GUI 统一入口：
+说明：`scripts/*.py` 目前是兼容启动入口；核心代码已迁移到 `apps/`、`core/`、`eval/` 目录。
+
+GUI 最终版入口（重点）：
+
+```bash
+python scripts/run_gui_cross_ljt.py
+```
+
+运行要点：
+- `Add Video` 选择视频
+- 在预览上框选 ROI（建议）
+- `Start` 开始
+
+补充：单分支 MOT 对比 GUI 仍可用：
 
 ```bash
 python scripts/run_gui_ljt.py
 ```
-
-在 GUI 里通过 `tracker` 下拉框选择方法。
 
 ## 当前整体流程
 

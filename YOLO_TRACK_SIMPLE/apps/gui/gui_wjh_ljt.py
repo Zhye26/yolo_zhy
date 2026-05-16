@@ -30,7 +30,7 @@ from PIL import Image, ImageTk
 from ultralytics import YOLO
 
 from methods.association_ljt import AssociationByteTracker, AssociationMotTracker
-from pipeline_ljt import Detection, FrameVehicleResult, expand_box, overlap_ratio, point_in_box, result_to_detections, sync_cuda_if_available
+from core.pipeline.pipeline_ljt import Detection, FrameVehicleResult, expand_box, overlap_ratio, point_in_box, result_to_detections, sync_cuda_if_available
 
 
 RIDER_CLASS_ID = 0
@@ -339,7 +339,8 @@ class WjhAssociationGuiLjt:
         self.display_frame_shape: tuple[int, int] = (0, 0)
         self.last_display_frame = None
 
-        default_model = Path(__file__).resolve().parent / "weights" / "wjh.pt"
+        project_root = Path(__file__).resolve().parents[2]
+        default_model = project_root / "weights" / "wjh.pt"
         self.model_path = StringVar(value=str(default_model))
         self.detect_classes = StringVar(value="0,1,2")
         self.conf = DoubleVar(value=0.25)

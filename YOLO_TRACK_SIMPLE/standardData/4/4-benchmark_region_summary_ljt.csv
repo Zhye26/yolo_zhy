@@ -1,0 +1,2 @@
+tracker,videos,gt_rows,pred_rows,matched_rows,detection_precision,detection_recall,gt_vehicle_count,pred_track_count,track_count_ratio,track_overcount,vehicle_coverage,gt_overload_vehicle_count,pred_overload_track_count,overload_count_ratio,overload_track_overcount,mean_id_consistency,id_switches,mean_avg_fragments_per_gt,mean_overload_f1,mean_suspected_overload_f1,mean_wall_fps
+iou,4,1812,1810,1810,1.000000,0.998896,45,82,1.822222,37,1.000000,12,5,0.416667,-7,1.000000,41,1.773623,0.783950,0.847302,35.566517

@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 
-from pipeline_ljt import (
+from core.pipeline.pipeline_ljt import (
     Detection,
     TrackedDetection,
     iou,

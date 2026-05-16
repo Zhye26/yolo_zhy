@@ -27,14 +27,14 @@ import cv2
 from PIL import Image, ImageTk
 from ultralytics import YOLO
 
-from gui_wjh_ljt import (
+from apps.gui.gui_wjh_ljt import (
     HEAD_CLASS_ID,
     HELMET_CLASS_ID,
     RIDER_CLASS_ID,
     TARGET_CLASSES as WJH_CLASSES,
     build_person_evidence_for_rider,
 )
-from pipeline_ljt import (
+from core.pipeline.pipeline_ljt import (
     MOTORCYCLE_CLASS_ID,
     PERSON_CLASS_ID,
     Detection,
@@ -95,10 +95,10 @@ class CrossValidateGuiLjt:
         self.root.title("Cross Validate: wjh.pt + yolov8n.pt")
         self.root.geometry("1280x820")
 
-        base = Path(__file__).resolve().parent
+        project_root = Path(__file__).resolve().parents[2]
         self.video_path = StringVar(value="")
-        self.wjh_model_path = StringVar(value=str(base / "weights" / "wjh.pt"))
-        self.yolo_model_path = StringVar(value=str(base / "weights" / "yolov8n.pt"))
+        self.wjh_model_path = StringVar(value=str(project_root / "weights" / "wjh.pt"))
+        self.yolo_model_path = StringVar(value=str(project_root / "weights" / "yolov8n.pt"))
         self.conf = DoubleVar(value=0.25)
         self.head_conf = DoubleVar(value=0.25)
         self.helmet_conf = DoubleVar(value=0.45)

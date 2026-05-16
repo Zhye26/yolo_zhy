@@ -8,8 +8,24 @@ It does not depend on the original Flask web app, database, training code, or or
 
 ```text
 YOLO_TRACK_SIMPLE/
-  pipeline_ljt.py              # shared YOLO/video/CSV pipeline
-  gui_ljt.py                   # shared Tkinter GUI
+  core/
+    pipeline/
+      pipeline_ljt.py          # shared YOLO/video/CSV pipeline
+  apps/
+    gui/
+      gui_ljt.py               # shared Tkinter GUI
+      gui_cross_validate_ljt.py
+      gui_wjh_ljt.py
+    cli/
+      run_cross_validate_video_ljt.py
+  eval/
+    benchmark/
+      benchmark_trackers_region_ljt.py
+    compare/
+      compare_cross_vs_association_ljt.py
+    debug/
+      debug_wjh_association_ljt.py
+      debug_wjh_frame_geometry_ljt.py
   yolov8n_overload_gui_ljt.py  # reference script
   yolov8n_overload_video_ljt.py# reference script
   weights/
@@ -37,9 +53,11 @@ YOLO_TRACK_SIMPLE/
       oasort_ljt.py
 ```
 
+`scripts/*.py` are compatibility launchers. Core implementations now live under `apps/`, `core/`, and `eval/`.
+
 ## Pipeline Design
 
-`pipeline_ljt.py` owns the shared process:
+`core/pipeline/pipeline_ljt.py` owns the shared process:
 
 - load YOLOv8n
 - read video frames
@@ -48,7 +66,7 @@ YOLO_TRACK_SIMPLE/
 - run common person-vehicle matching
 - write frame CSV, summary CSV, and optional annotated video
 
-`gui_ljt.py` owns the GUI controls and calls the shared pipeline functions.
+`apps/gui/gui_ljt.py` owns the GUI controls and calls the shared pipeline functions.
 
 Concrete tracking methods live under `methods/`:
 
@@ -71,13 +89,24 @@ See `MOT_METHOD_COMMANDS_ljt.md` for detailed Chinese notes and commands.
 
 ## Run GUI
 
+Final recommended GUI entry (cross-validate):
+
 ```bash
 conda activate xunienv
 cd YOLO_TRACK_SIMPLE
-python scripts/run_gui_ljt.py
+python scripts/run_gui_cross_ljt.py
 ```
 
-In the GUI, choose the MOT backend from `tracker`.
+Quick steps:
+- Click `Add Video`
+- Draw ROI on preview (recommended for standard-data evaluation)
+- Click `Start`
+
+If you need single-branch MOT comparison GUI, use:
+
+```bash
+python scripts/run_gui_ljt.py
+```
 
 Default weights:
 

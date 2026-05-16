@@ -40,7 +40,7 @@ from ultralytics import YOLO
 
 from methods.mot_trackers_ljt import AVAILABLE_TRACKERS
 
-from pipeline_ljt import (
+from core.pipeline.pipeline_ljt import (
     ASSOCIATION_MOT_TRACKERS,
     MOTORCYCLE_CLASS_ID,
     PERSON_CLASS_ID,
@@ -69,7 +69,8 @@ class Yolov8nOverloadGuiLjt:
         self.current_photo = None
         self.track_result_rows: List[str] = []
 
-        default_model = Path(__file__).resolve().parent / "weights" / "yolov8n.pt"
+        project_root = Path(__file__).resolve().parents[2]
+        default_model = project_root / "weights" / "yolov8n.pt"
         self.model_path = StringVar(value=str(default_model))
         self.detect_classes = StringVar(value="0,3")
         self.conf = DoubleVar(value=0.25)
@@ -85,7 +86,7 @@ class Yolov8nOverloadGuiLjt:
         self.byte_track_buffer = IntVar(value=30)
         self.mot_min_hits = IntVar(value=3)
         self.reid_weights = StringVar(
-            value=str(Path(__file__).resolve().parent / "weights" / "osnet_x0_25_msmt17.pt")
+            value=str(project_root / "weights" / "osnet_x0_25_msmt17.pt")
         )
         self.reid_device = StringVar(value="cpu")
         self.reid_fp16 = BooleanVar(value=False)
