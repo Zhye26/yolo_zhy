@@ -68,7 +68,7 @@ class Yolov8nOverloadGuiLjt:
         self.imgsz = IntVar(value=640)
         self.match_thresh = DoubleVar(value=1.05)
         self.confirm_frames = IntVar(value=2)
-        self.tracker = StringVar(value="association")
+        self.tracker = StringVar(value="auto")
         self.track_iou = DoubleVar(value=0.18)
         self.max_missed = IntVar(value=6)
         self.byte_track_thresh = DoubleVar(value=0.25)

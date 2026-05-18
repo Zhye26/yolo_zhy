@@ -42,6 +42,7 @@ def _run_startup_checks(app: Flask) -> None:
 
 
 def create_app(config_class=Config):
+    # Author: You Pinzhen - application skeleton, extension setup, and blueprint registration.
     app = Flask(
         __name__,
         template_folder='../templates',

@@ -17,6 +17,7 @@ detector = EbikeDetector(task_mode="ebike")
 @bp.route('/healthz')
 def health_check():
     """Application health check endpoint."""
+    # Author: You Pinzhen - API health endpoint for runtime readiness checks.
     model_path = settings.model.model_path
 
     checks = {
@@ -147,6 +148,7 @@ def video_stream():
 @bp.route('/video/session/<int:detection_id>', methods=['POST'])
 def create_video_session(detection_id):
     """创建视频处理会话"""
+    # Author: You Pinzhen - video session API connecting uploaded videos to processing state.
     detection = Detection.query.get_or_404(detection_id)
     if detection.file_type != 'video':
         return jsonify({"error": "Not a video file"}), 400

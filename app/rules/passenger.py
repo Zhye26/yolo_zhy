@@ -13,6 +13,8 @@ from app.core.types import (
     ViolationType,
 )
 from app.rules.base import ViolationRule
+from app.rules.match_classifier import PersonVehicleMatchClassifier
+from app.rules.match_features import legacy_rider_vehicle_score
 
 
 class PassengerRule(ViolationRule):
@@ -33,6 +35,7 @@ class PassengerRule(ViolationRule):
         self._edge_temporal_hold_frames = 24
         self._weak_support_hold_frames = 1
         self._edge_weak_support_hold_frames = 16
+        self._match_classifier = self._build_match_classifier()
 
     def reset(self) -> None:
         self._track_history.clear()
@@ -62,7 +65,7 @@ class PassengerRule(ViolationRule):
             }
 
         for rider in riders:
-            match = self._find_best_ebike_match(rider.detection, ebikes)
+            match = self._find_best_ebike_match(rider.detection, ebikes, context.meta.width)
             if match is None:
                 continue
             ebike_index, _ = match
@@ -376,13 +379,16 @@ class PassengerRule(ViolationRule):
         self,
         rider: Detection,
         ebikes: List[Track],
+        frame_width: int = 0,
     ) -> Optional[Tuple[int, float]]:
         best_index: Optional[int] = None
         best_score = 0.0
         best_area = 0.0
 
         for ebike_index, ebike_track in enumerate(ebikes):
-            score = self._rider_ebike_score(rider.bbox, ebike_track.detection.bbox)
+            score = self._match_score(rider, ebike_track.detection, frame_width)
+            if score is None:
+                continue
             ebike_area = ebike_track.detection.area
             if (
                 score > best_score + 0.08
@@ -395,6 +401,31 @@ class PassengerRule(ViolationRule):
         if best_index is None or best_score < 0.16:
             return None
         return best_index, best_score
+
+    def _match_score(
+        self,
+        rider: Detection,
+        ebike: Detection,
+        frame_width: int,
+    ) -> Optional[float]:
+        if self._match_classifier is not None and self._match_classifier.available:
+            score = self._match_classifier.score(rider, ebike, frame_width=frame_width)
+            if score is None or score < self._match_classifier.threshold:
+                return None
+            return score
+        return self._rider_ebike_score(rider.bbox, ebike.bbox)
+
+    def _build_match_classifier(self) -> Optional[PersonVehicleMatchClassifier]:
+        if not settings.rules.match_classifier_enabled:
+            return None
+        try:
+            classifier = PersonVehicleMatchClassifier(
+                settings.rules.match_classifier_path,
+                threshold=settings.rules.match_classifier_threshold,
+            )
+        except Exception:
+            return None
+        return classifier if classifier.available else None
 
     def _merged_overload_class(
         self,
@@ -483,36 +514,7 @@ class PassengerRule(ViolationRule):
         return None
 
     def _rider_ebike_score(self, rider_bbox: List[float], ebike_bbox: List[float]) -> float:
-        px1, py1, px2, py2 = rider_bbox
-        ex1, ey1, ex2, ey2 = ebike_bbox
-        rider_w = max(1.0, px2 - px1)
-        rider_h = max(1.0, py2 - py1)
-        ebike_w = max(1.0, ex2 - ex1)
-        ebike_h = max(1.0, ey2 - ey1)
-
-        foot_x = (px1 + px2) / 2
-        foot_y = py2
-        margin_x = ebike_w * 0.18
-        margin_top = ebike_h * 0.22
-        margin_bottom = ebike_h * 0.16
-        foot_supported = (
-            ex1 - margin_x <= foot_x <= ex2 + margin_x
-            and ey1 - margin_top <= foot_y <= ey2 + margin_bottom
-        )
-
-        if not foot_supported and rider_h > ebike_h * 1.18 and foot_y > ey2 + ebike_h * 0.26:
-            return 0.0
-
-        score = 0.0
-        if foot_supported:
-            score += 0.75
-
-        lower_half = [px1, py1 + (py2 - py1) * 0.45, px2, py2]
-        score += self._iou(lower_half, ebike_bbox)
-        score += self._horizontal_overlap(lower_half, ebike_bbox) * 0.35
-        score += min(ebike_w / rider_w, 6.0) * 0.05
-        score += min(ebike_h / rider_h, 2.5) * 0.10
-        return score
+        return legacy_rider_vehicle_score(rider_bbox, ebike_bbox)
 
     def _foot_point_inside(
         self,
